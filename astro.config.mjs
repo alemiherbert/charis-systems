@@ -3,12 +3,8 @@ import tailwind from "@astrojs/tailwind";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import icon from "astro-icon";
-import vercel from '@astrojs/vercel';
 
-// https://astro.build/config
 export default defineConfig({
-  site: "https://astroship.web3templates.com",
+  site: "https://charis.system.",
   integrations: [tailwind(), mdx(), sitemap(), icon()],
-  output: 'server',
-  adapter: vercel(),
 });
