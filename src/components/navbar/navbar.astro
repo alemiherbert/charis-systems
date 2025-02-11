@@ -1,0 +1,113 @@
+---
+import Container from "@components/container.astro";
+import Link from "@components/ui/link.astro";
+import { Icon } from "astro-icon/components";
+import { Astronav, MenuItems, MenuIcon } from "astro-navbar";
+
+
+const menuitems = [
+  {
+    title: "Pricing",
+    path: "/pricing",
+  },
+  {
+    title: "Blog",
+    path: "/blog",
+  },
+  {
+    title: "About",
+    path: "/about",
+  },
+];
+const spotsAvailable = 2;
+---
+
+<Container>
+  <header class="flex flex-col lg:flex-row justify-between items-center my-5">
+    <Astronav>
+      <div class="flex w-full lg:w-auto items-center justify-between">
+        <div class="flex items-center gap-8">
+          <a href="/" class="text-lg">
+            <span class="font-bold text-slate-800">Charis</span>
+            <span class="text-slate-500">Systems</span>
+          </a>
+          <!-- Menu items next to logo on large screens -->
+          <div class="hidden lg:block">
+            <ul class="flex gap-8">
+              {
+                menuitems.map((item) => (
+                  <li>
+                    <a
+                      href={item.path}
+                      class="flex items-center text-gray-600 hover:text-gray-900"
+                    >
+                      <span>{item.title}</span>
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+        <div class="block lg:hidden">
+          <MenuIcon class="w-4 h-4 text-gray-800" />
+        </div>
+      </div>
+      <MenuItems class="hidden w-full lg:w-auto mt-2 lg:flex lg:mt-0">
+        <!-- Mobile menu items -->
+        <div class="lg:hidden">
+          <ul class="flex flex-col gap-4 mt-4">
+            {
+              menuitems.map((item) => (
+                <li>
+                  <a
+                    href={item.path}
+                    class="flex items-center text-gray-600 hover:text-gray-900"
+                  >
+                    <span>{item.title}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+          <!-- Availability status in mobile menu -->
+          <div class="mt-4 py-4 border-t border-gray-200">
+            <span class="flex gap-2 text-sm items-center">
+              <Icon
+                class={`w-5 h-5 ${spotsAvailable > 0 ? "text-green-500" : "text-red-500"}`}
+                name="bx:bxs-circle"
+              />
+              {
+                spotsAvailable > 0
+                  ? `${spotsAvailable} spot${spotsAvailable > 1 ? "s" : ""} available`
+                  : "We're fully booked"
+              }
+            </span>
+          </div>
+          <div class="flex items-center mt-4">
+            <Link href="/contact" size="md" class="text-sm px-6 w-full" block>
+              Contact Us
+            </Link>
+          </div>
+        </div>
+      </MenuItems>
+    </Astronav>
+    <!-- Desktop availability status and contact button -->
+    <div class="hidden lg:flex items-center gap-4">
+      <span class="flex gap-2 text-sm items-center">
+        <Icon
+          class={`w-5 h-5 ${spotsAvailable > 0 ? "text-green-500" : "text-red-500"}`}
+          name="bx:bxs-circle"
+        />
+        {
+          spotsAvailable > 0
+            ? `${spotsAvailable} spot${spotsAvailable > 1 ? "s" : ""} available`
+            : "We're fully booked"
+        }
+      </span>
+      <Link href="/contact" size="md" class="text-sm px-6">
+        Contact Us
+      </Link>
+    </div>
+  </header>
+</Container>

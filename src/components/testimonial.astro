@@ -1,0 +1,50 @@
+---
+import { Icon } from "astro-icon/components";
+export const testimonials = [
+  {
+    quote:
+      "We now get 10x the traffic before we met these guys. Definitely hiring them again.",
+    name: "Joshua Masiiko",
+    position: "CEO, Kanyeihamba Agriculture",
+  },
+  {
+    quote:
+      "Their designs are masterfully polished, trend yet remaining distincltly original.",
+    name: "Jonathan Mageno",
+    position: "CTO, The Kampala Journal",
+  },
+  {
+    quote:
+      "Highly recommend! We had to ship an app in 2 weeks. These guys did it in 5 days.",
+    name: "Emily Zhang",
+    position: "Marketing Director, Phire",
+  },
+];
+---
+
+<section class="py-16" id="testimonials">
+  <div class="container mx-auto max-w-5xl text-center">
+    <h2 class="text-4xl text-center lg:text-5xl font-bold lg:tracking-tight">
+      Our Reputation
+    </h2>
+    <p class="text-lg text-gray-600 mt-2 max-w-2xl mx-auto">
+      Hear from our satisfied clients.
+    </p>
+
+    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+      {
+        testimonials.map((testimonial) => (
+          <div class="bg-white rounded-lg text-center">
+            <Icon
+              name="bx:bxs-quote-alt-left"
+              class="text-2xl text-gray-400 mb-4 mx-auto"
+            />
+            <p class="text-gray-600 mb-4">{testimonial.quote}</p>
+            <p class="font-semibold text-gray-800">{testimonial.name}</p>
+            <p class="text-gray-500">{testimonial.position}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

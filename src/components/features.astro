@@ -1,0 +1,68 @@
+---
+import { Icon } from "astro-icon/components";
+
+const services = [
+  {
+    title: "Frontend Development",
+    description:
+      "React, Vue, and Next.js development with a focus on performance and accessibility.",
+    icon: "bx:bxs-devices",
+  },
+  {
+    title: "Backend Development",
+    description:
+      "Scalable APIs and server solutions using Node.js, Python, or Go.",
+    icon: "bx:bxs-data",
+  },
+  {
+    title: "Full Stack Solutions",
+    description:
+      "End-to-end development combining frontend and backend expertise.",
+    icon: "bx:bxs-layer",
+  },
+  {
+    title: "Code Review & Refactoring",
+    description:
+      "Optimize your codebase with expert review and best practices.",
+    icon: "bx:bxs-file-find",
+  },
+  {
+    title: "Data Science",
+    description:
+      "Advanced data analysis, machine learning, and predictive modeling.",
+    icon: "bx:bx-bar-chart-square",
+  },
+  {
+    title: "Integration & APIs",
+    description:
+      "Connect systems and automate workflows with seamless API integrations.",
+    icon: "bx:bxs-plug",
+  },
+];
+---
+
+<div class="mt-24 md:mt-0">
+  <h2 class="text-4xl text-center lg:text-5xl font-bold lg:tracking-tight">
+    Senior Developers at Your Service
+  </h2>
+  <p class="text-lg text-center mt-2 text-slate-600">
+    We provide fast, reliable, and professional development services scaled to
+    your needs.
+  </p>
+</div>
+
+<div class="grid max-w-5xl mx-auto sm:grid-cols-2 md:grid-cols-3 mt-12 gap-12">
+  {
+    services.map((item) => (
+      <div class="flex gap-6 items-start">
+        <div class="mt-1 bg-black rounded-full p-3 w-10 h-10 shrink-0">
+          <Icon class="text-white" name={item.icon} />
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg">{item.title}</h3>
+          <p class="text-slate-500 mt-1 leading-relaxed">{item.description}</p>
+        </div>
+      </div>
+    ))
+  }
+</div>
