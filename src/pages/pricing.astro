@@ -6,38 +6,16 @@ import PricingCard from "@components/pricing.astro";
 
 const pricing = [
   {
-    name: "Personal",
-    price: "Free",
+    name: "One-Off",
+    price: "$999",
     popular: false,
     features: [
-      "Lifetime free",
-      "Up to 3 users",
-      "Unlimited Pages",
-      "Astro Sub domain",
-      "Basic Integrations",
-      "Community Support",
-    ],
-    button: {
-      text: "Get Started",
-      link: "/",
-    },
-  },
-  {
-    name: "Startup",
-    price: {
-      monthly: "$19",
-      annual: "$16",
-      discount: "10%",
-      original: "$24",
-    },
-    popular: true,
-    features: [
-      "All Free Features",
-      "Up to 20 users",
-      "20 Custom domains",
-      "Unlimited Collaborators",
-      "Advanced Integrations",
-      "Priority Support",
+      "2-3 Days Turnaround",
+      "Design or Development",
+      "1 Revision Included",
+      "Responsive Design",
+      "Optimized for Conversions",
+      "Content Integration",
     ],
     button: {
       text: "Get Started",
@@ -45,20 +23,38 @@ const pricing = [
     },
   },
   {
-    name: "Enterprise",
-    price: "Custom",
-    popular: false,
+    name: "Design",
+    price: "$1499/m",
+    popular: true,
     features: [
-      "All Pro Features",
-      "Unlimited Custom domains",
-      "99.99% Uptime SLA",
-      "SAML & SSO Integration",
-      "Dedicated Account Manager",
-      "24/7 Phone Support",
+      "Custom Designs in Figma",
+      "1 Request at a Time",
+      "Unlimited Feedback",
+      "Conversion-Optimized Designs",
+      "Branding Support",
+      "Fast Delivery (2-3 Days)",
     ],
     button: {
-      text: "Contact us",
-      link: "/contact",
+      text: "Get Started",
+      link: "#",
+    },
+  },
+  {
+    name: "Design + Dev",
+    price: "$1999/m",
+    popular: false,
+    features: [
+      "Astro & Tailwind Code",
+      "Complete Full-Stack Development",
+      "SEO & Performance Optimized",
+      "Continuous Maintenance & Updates",
+      "Dedicated Developer",
+      "Priority Support",
+      "Post-Launch Monitoring",
+    ],
+    button: {
+      text: "Get Started",
+      link: "#",
     },
   },
 ];
@@ -68,9 +64,7 @@ const pricing = [
   <Container>
     <Sectionhead>
       <Fragment slot="title">Pricing</Fragment>
-      <Fragment slot="desc">
-        Simple & Predictable pricing. No Surprises.
-      </Fragment>
+      <Fragment slot="desc">Simple & Predictable pricing. No Surprises.</Fragment>
     </Sectionhead>
 
     <div class="grid md:grid-cols-3 gap-10 mx-auto max-w-screen-lg mt-12">
