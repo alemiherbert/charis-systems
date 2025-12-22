@@ -61,6 +61,19 @@ import { Icon } from "astro-icon/components";
     
     if (!container || !canvas) return;
 
+    // Check for WebGL support
+    try {
+      const testCanvas = document.createElement('canvas');
+      const gl = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+      if (!gl) {
+        console.warn('WebGL not supported, falling back to CSS animations');
+        return;
+      }
+    } catch (e) {
+      console.warn('WebGL check failed:', e);
+      return;
+    }
+
     // Scene setup
     const scene = new THREE.Scene();
     
@@ -69,27 +82,39 @@ import { Icon } from "astro-icon/components";
     camera.position.z = 5;
 
     // Renderer
-    const renderer = new THREE.WebGLRenderer({ 
-      canvas, 
-      alpha: true, 
-      antialias: true 
-    });
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ 
+        canvas, 
+        alpha: true, 
+        antialias: true 
+      });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    } catch (e) {
+      console.warn('WebGL renderer creation failed:', e);
+      return;
+    }
 
     // Create floating geometric shapes
     const shapes: THREE.Mesh[] = [];
-    const geometries = [
-      new THREE.IcosahedronGeometry(0.8, 0),
-      new THREE.OctahedronGeometry(0.6, 0),
-      new THREE.TorusGeometry(0.5, 0.2, 16, 32),
-      new THREE.DodecahedronGeometry(0.5, 0),
-      new THREE.TetrahedronGeometry(0.6, 0),
+    const geometries: THREE.BufferGeometry[] = [];
+    const materials: THREE.Material[] = [];
+    
+    const geometryConfigs = [
+      () => new THREE.IcosahedronGeometry(0.8, 0),
+      () => new THREE.OctahedronGeometry(0.6, 0),
+      () => new THREE.TorusGeometry(0.5, 0.2, 16, 32),
+      () => new THREE.DodecahedronGeometry(0.5, 0),
+      () => new THREE.TetrahedronGeometry(0.6, 0),
     ];
 
     const colors = [0x6366f1, 0x8b5cf6, 0x06b6d4, 0xec4899, 0x3b82f6];
 
-    geometries.forEach((geometry, i) => {
+    geometryConfigs.forEach((createGeometry, i) => {
+      const geometry = createGeometry();
+      geometries.push(geometry);
+      
       const material = new THREE.MeshPhongMaterial({
         color: colors[i],
         transparent: true,
@@ -97,6 +122,7 @@ import { Icon } from "astro-icon/components";
         shininess: 100,
         wireframe: i % 2 === 0 ? false : true,
       });
+      materials.push(material);
       
       const mesh = new THREE.Mesh(geometry, material);
       mesh.position.x = (Math.random() - 0.5) * 6;
@@ -127,10 +153,26 @@ import { Icon } from "astro-icon/components";
     pointLight.position.set(-3, 2, 3);
     scene.add(pointLight);
 
-    // Animation
+    // Animation with visibility check
     let time = 0;
+    let animationId: number;
+    let isVisible = true;
+
+    // Intersection Observer for visibility-based animation
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        isVisible = entry.isIntersecting;
+      });
+    }, { threshold: 0.1 });
+    
+    observer.observe(container);
+
     function animate() {
-      requestAnimationFrame(animate);
+      animationId = requestAnimationFrame(animate);
+      
+      // Only render when visible
+      if (!isVisible) return;
+      
       time += 0.01;
 
       shapes.forEach((shape) => {
@@ -155,18 +197,39 @@ import { Icon } from "astro-icon/components";
     window.addEventListener('resize', handleResize);
 
     // Mouse interaction
-    let mouseX = 0;
-    let mouseY = 0;
-
-    container.addEventListener('mousemove', (event) => {
+    function handleMouseMove(event: MouseEvent) {
       const rect = container.getBoundingClientRect();
-      mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      const mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      const mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
       
       camera.position.x = mouseX * 0.5;
       camera.position.y = mouseY * 0.5;
       camera.lookAt(scene.position);
-    });
+    }
+
+    container.addEventListener('mousemove', handleMouseMove);
+
+    // Cleanup function
+    function cleanup() {
+      cancelAnimationFrame(animationId);
+      observer.disconnect();
+      window.removeEventListener('resize', handleResize);
+      container.removeEventListener('mousemove', handleMouseMove);
+      
+      // Dispose Three.js resources
+      shapes.forEach((mesh) => {
+        scene.remove(mesh);
+      });
+      geometries.forEach((geometry) => geometry.dispose());
+      materials.forEach((material) => material.dispose());
+      renderer.dispose();
+    }
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', cleanup);
+    
+    // Also cleanup when navigating away (for SPA behavior)
+    document.addEventListener('astro:before-swap', cleanup);
   }
 
   // Initialize when DOM is ready
