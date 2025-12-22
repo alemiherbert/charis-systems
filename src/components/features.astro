@@ -47,24 +47,24 @@ const services = [
 ];
 ---
 
-<div class="mt-24 md:mt-0">
-  <h2 class="text-4xl text-center lg:text-5xl font-bold lg:tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+<div class="mt-16 sm:mt-20 md:mt-0 px-4 sm:px-0">
+  <h2 class="text-3xl sm:text-4xl text-center lg:text-5xl font-bold lg:tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
     Expert solutions for your business
   </h2>
-  <p class="text-lg text-center mt-4 text-slate-600 max-w-2xl mx-auto">
+  <p class="text-base sm:text-lg text-center mt-4 text-slate-600 max-w-2xl mx-auto px-4 sm:px-0">
     From web design to ERP implementation, we deliver fast, reliable, and professional services scaled to your needs.
   </p>
 </div>
 
-<div class="grid max-w-5xl mx-auto sm:grid-cols-2 md:grid-cols-3 mt-16 gap-8">
+<div class="grid max-w-5xl mx-auto grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-10 sm:mt-16 gap-4 sm:gap-6 lg:gap-8 px-4 sm:px-6 lg:px-0">
   {
     services.map((item) => (
-      <div class="group p-6 rounded-2xl bg-white border border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-        <div class={`w-12 h-12 bg-gradient-to-br ${item.gradient} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-          <Icon class="text-white w-6 h-6" name={item.icon} />
+      <div class="group p-5 sm:p-6 rounded-2xl bg-white border border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+        <div class={`w-11 h-11 sm:w-12 sm:h-12 bg-gradient-to-br ${item.gradient} rounded-xl flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300`}>
+          <Icon class="text-white w-5 h-5 sm:w-6 sm:h-6" name={item.icon} />
         </div>
-        <h3 class="font-semibold text-lg text-slate-900">{item.title}</h3>
-        <p class="text-slate-500 mt-2 leading-relaxed">{item.description}</p>
+        <h3 class="font-semibold text-base sm:text-lg text-slate-900">{item.title}</h3>
+        <p class="text-slate-500 mt-2 leading-relaxed text-sm sm:text-base">{item.description}</p>
       </div>
     ))
   }

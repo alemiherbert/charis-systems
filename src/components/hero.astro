@@ -1,38 +1,44 @@
 ---
-import { Picture } from "astro:assets";
-import heroImage from "assets/hero.png";
 import Link from "@components/ui/link.astro";
 import { Icon } from "astro-icon/components";
 ---
 
 <main
-  class="relative grid lg:grid-cols-2 bg-gradient-to-br from-indigo-50 via-white to-purple-50 px-8 lg:px-12 place-items-center pt-16 pb-16 rounded-2xl mb-16 md:pt-16 md:pb-20 overflow-hidden"
+  class="relative grid lg:grid-cols-2 bg-gradient-to-br from-indigo-50 via-white to-purple-50 px-4 sm:px-8 lg:px-12 place-items-center pt-12 pb-12 sm:pt-16 sm:pb-16 rounded-2xl mb-16 md:pt-16 md:pb-20 overflow-hidden min-h-[500px] md:min-h-[600px]"
 >
   <!-- Decorative elements -->
-  <div class="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-indigo-200/30 to-purple-200/30 rounded-full blur-3xl -z-10"></div>
-  <div class="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-blue-200/20 to-indigo-200/20 rounded-full blur-3xl -z-10"></div>
+  <div class="absolute top-0 right-0 w-48 sm:w-72 h-48 sm:h-72 bg-gradient-to-br from-indigo-200/30 to-purple-200/30 rounded-full blur-3xl -z-10"></div>
+  <div class="absolute bottom-0 left-0 w-40 sm:w-64 h-40 sm:h-64 bg-gradient-to-tr from-blue-200/20 to-indigo-200/20 rounded-full blur-3xl -z-10"></div>
   
-  <div class="py-6 md:order-1 hidden md:block">
-    <Picture
-      src={heroImage}
-      alt="Developer working on code"
-      widths={[200, 400, 600]}
-      sizes="(max-width: 800px) 100vw, 620px"
-      loading="eager"
-      format="avif"
-      class="drop-shadow-xl hover:scale-105 transition-transform duration-500"
-    />
+  <!-- Three.js Canvas Container -->
+  <div class="py-6 md:order-1 hidden md:flex items-center justify-center w-full h-full min-h-[300px] lg:min-h-[400px]">
+    <div id="three-canvas-container" class="w-full h-full relative">
+      <canvas id="hero-canvas" class="w-full h-full"></canvas>
+    </div>
   </div>
-  <div>
+  
+  <!-- Mobile animated shapes fallback -->
+  <div class="md:hidden py-6 flex items-center justify-center">
+    <div class="relative w-64 h-64">
+      <div class="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl animate-float opacity-80"></div>
+      <div class="absolute inset-4 bg-gradient-to-tr from-cyan-400 to-indigo-500 rounded-2xl animate-float opacity-70" style="animation-delay: -2s;"></div>
+      <div class="absolute inset-8 bg-gradient-to-r from-purple-400 to-pink-500 rounded-xl animate-float opacity-60" style="animation-delay: -4s;"></div>
+      <div class="absolute inset-0 flex items-center justify-center">
+        <Icon class="w-20 h-20 text-white drop-shadow-lg" name="bx:bxs-rocket" />
+      </div>
+    </div>
+  </div>
+  
+  <div class="text-center md:text-left">
     <h1
-      class="text-5xl lg:text-6xl xl:text-7xl font-bold lg:tracking-tight xl:tracking-tighter bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-800 bg-clip-text text-transparent"
+      class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold lg:tracking-tight xl:tracking-tighter bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-800 bg-clip-text text-transparent leading-tight"
     >
       Expert Tech Solutions on Demand
     </h1>
-    <p class="text-lg mt-4 text-slate-600 max-w-xl leading-relaxed">
+    <p class="text-base sm:text-lg mt-4 text-slate-600 max-w-xl leading-relaxed mx-auto md:mx-0">
       Web design, development, ERP implementation, and consulting — all with predictable monthly pricing and unlimited requests.
     </p>
-    <div class="mt-8 flex flex-col sm:flex-row gap-3">
+    <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
       <Link
         size="lg"
         rel="noopener"
@@ -45,3 +51,128 @@ import { Icon } from "astro-icon/components";
     </div>
   </div>
 </main>
+
+<script>
+  import * as THREE from 'three';
+
+  function initThreeJS() {
+    const container = document.getElementById('three-canvas-container');
+    const canvas = document.getElementById('hero-canvas') as HTMLCanvasElement;
+    
+    if (!container || !canvas) return;
+
+    // Scene setup
+    const scene = new THREE.Scene();
+    
+    // Camera
+    const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.z = 5;
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ 
+      canvas, 
+      alpha: true, 
+      antialias: true 
+    });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Create floating geometric shapes
+    const shapes: THREE.Mesh[] = [];
+    const geometries = [
+      new THREE.IcosahedronGeometry(0.8, 0),
+      new THREE.OctahedronGeometry(0.6, 0),
+      new THREE.TorusGeometry(0.5, 0.2, 16, 32),
+      new THREE.DodecahedronGeometry(0.5, 0),
+      new THREE.TetrahedronGeometry(0.6, 0),
+    ];
+
+    const colors = [0x6366f1, 0x8b5cf6, 0x06b6d4, 0xec4899, 0x3b82f6];
+
+    geometries.forEach((geometry, i) => {
+      const material = new THREE.MeshPhongMaterial({
+        color: colors[i],
+        transparent: true,
+        opacity: 0.8,
+        shininess: 100,
+        wireframe: i % 2 === 0 ? false : true,
+      });
+      
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.x = (Math.random() - 0.5) * 6;
+      mesh.position.y = (Math.random() - 0.5) * 4;
+      mesh.position.z = (Math.random() - 0.5) * 3;
+      mesh.userData = {
+        rotationSpeed: {
+          x: (Math.random() - 0.5) * 0.02,
+          y: (Math.random() - 0.5) * 0.02,
+        },
+        floatSpeed: Math.random() * 0.5 + 0.5,
+        floatOffset: Math.random() * Math.PI * 2,
+        originalY: mesh.position.y,
+      };
+      shapes.push(mesh);
+      scene.add(mesh);
+    });
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(5, 5, 5);
+    scene.add(directionalLight);
+
+    const pointLight = new THREE.PointLight(0x6366f1, 1, 10);
+    pointLight.position.set(-3, 2, 3);
+    scene.add(pointLight);
+
+    // Animation
+    let time = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+      time += 0.01;
+
+      shapes.forEach((shape) => {
+        shape.rotation.x += shape.userData.rotationSpeed.x;
+        shape.rotation.y += shape.userData.rotationSpeed.y;
+        shape.position.y = shape.userData.originalY + Math.sin(time * shape.userData.floatSpeed + shape.userData.floatOffset) * 0.3;
+      });
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Handle resize
+    function handleResize() {
+      if (!container) return;
+      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(container.clientWidth, container.clientHeight);
+    }
+
+    window.addEventListener('resize', handleResize);
+
+    // Mouse interaction
+    let mouseX = 0;
+    let mouseY = 0;
+
+    container.addEventListener('mousemove', (event) => {
+      const rect = container.getBoundingClientRect();
+      mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      
+      camera.position.x = mouseX * 0.5;
+      camera.position.y = mouseY * 0.5;
+      camera.lookAt(scene.position);
+    });
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initThreeJS);
+  } else {
+    initThreeJS();
+  }
+</script>

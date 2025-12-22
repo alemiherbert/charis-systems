@@ -2,20 +2,20 @@
 // @ts-ignore
 import { Icon } from "astro-icon/components";
 ---
-<footer class="mt-20 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 py-16">
-  <div class="container mx-auto px-4 max-w-screen-xl">
+<footer class="mt-20 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 py-12 sm:py-16 lg:py-20">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl">
     <!-- Grid Container -->
-    <div class="grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-10 lg:gap-20">
+    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 sm:gap-10 lg:gap-16">
       <!-- Section 1: About -->
-      <div class="text-left">
+      <div class="text-center sm:text-left">
         <h3 class="text-lg font-semibold text-white">About Us</h3>
-        <p class="mt-4 text-sm text-slate-400 leading-relaxed">
+        <p class="mt-4 text-sm text-slate-400 leading-relaxed max-w-xs mx-auto sm:mx-0">
           We are a team of passionate developers building amazing tools for the web.
         </p>
       </div>
 
       <!-- Section 2: Quick Links -->
-      <div class="text-left">
+      <div class="text-center sm:text-left">
         <h3 class="text-lg font-semibold text-white">Quick Links</h3>
         <ul class="mt-4 space-y-3">
           <li><a href="/privacy-policy" class="text-sm text-slate-400 hover:text-indigo-400 transition-colors hover:underline">Privacy Policy</a></li>
@@ -25,19 +25,19 @@ import { Icon } from "astro-icon/components";
       </div>
 
       <!-- Section 3: Social Media -->
-      <div class="text-left">
+      <div class="text-center sm:text-left sm:col-span-2 md:col-span-1">
         <h3 class="text-lg font-semibold text-white">Follow Us</h3>
-        <div class="mt-4 flex gap-4">
+        <div class="mt-4 flex gap-4 justify-center sm:justify-start">
           <!-- Twitter -->
-          <a href="https://x.com/charissystems" target="_blank" rel="noopener" class="block p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors">
+          <a href="https://x.com/charissystems" target="_blank" rel="noopener" class="block p-2.5 sm:p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors">
             <Icon class="size-5 text-slate-400 hover:text-blue-400 transition-colors" name="simple-icons:twitter" />
           </a>
           <!-- LinkedIn -->
-          <a href="https://linkedin.com/charissystems" target="_blank" rel="noopener" class="block p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors">
+          <a href="https://linkedin.com/charissystems" target="_blank" rel="noopener" class="block p-2.5 sm:p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors">
             <Icon class="size-5 text-slate-400 hover:text-blue-500 transition-colors" name="simple-icons:linkedin" />
           </a>
           <!-- GitHub -->
-          <a href="https://github.com/charissystems" target="_blank" rel="noopener" class="block p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors">
+          <a href="https://github.com/charissystems" target="_blank" rel="noopener" class="block p-2.5 sm:p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors">
             <Icon class="size-5 text-slate-400 hover:text-white transition-colors" name="simple-icons:github" />
           </a>
         </div>
@@ -45,7 +45,7 @@ import { Icon } from "astro-icon/components";
     </div>
 
     <!-- Copyright and Attribution Section -->
-    <div class="mt-12 space-y-2 border-t border-slate-800 pt-8 text-left">
+    <div class="mt-10 sm:mt-12 lg:mt-16 space-y-2 border-t border-slate-800 pt-6 sm:pt-8 text-center sm:text-left">
       <p class="text-sm text-slate-400">
         Copyright © {new Date().getFullYear()} Charis Systems. All rights reserved.
       </p>
