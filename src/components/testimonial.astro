@@ -22,26 +22,30 @@ export const testimonials = [
 ];
 ---
 
-<section class="py-16" id="testimonials">
+<section class="py-20" id="testimonials">
   <div class="container mx-auto max-w-5xl text-center">
-    <h2 class="text-4xl text-center lg:text-5xl font-bold lg:tracking-tight">
+    <h2 class="text-4xl text-center lg:text-5xl font-bold lg:tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
       Our Reputation
     </h2>
-    <p class="text-lg text-gray-600 mt-2 max-w-2xl mx-auto">
+    <p class="text-lg text-slate-600 mt-4 max-w-2xl mx-auto">
       Hear from our satisfied clients.
     </p>
 
-    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+    <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       {
         testimonials.map((testimonial) => (
-          <div class="bg-white rounded-lg text-center">
-            <Icon
-              name="bx:bxs-quote-alt-left"
-              class="text-2xl text-gray-400 mb-4 mx-auto"
-            />
-            <p class="text-gray-600 mb-4">{testimonial.quote}</p>
-            <p class="font-semibold text-gray-800">{testimonial.name}</p>
-            <p class="text-gray-500">{testimonial.position}</p>
+          <div class="group bg-white rounded-2xl p-8 text-center border border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div class="w-12 h-12 mx-auto mb-6 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <Icon
+                name="bx:bxs-quote-alt-left"
+                class="text-xl text-indigo-500"
+              />
+            </div>
+            <p class="text-slate-600 leading-relaxed">{testimonial.quote}</p>
+            <div class="mt-6 pt-6 border-t border-slate-100">
+              <p class="font-semibold text-slate-900">{testimonial.name}</p>
+              <p class="text-sm text-slate-500 mt-1">{testimonial.position}</p>
+            </div>
           </div>
         ))
       }

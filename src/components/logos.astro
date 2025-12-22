@@ -4,21 +4,40 @@ import { Icon } from "astro-icon/components";
 ---
 
 <div class="mt-24 mb-10">
-  <h2 class="text-4xl text-center lg:text-5xl font-bold lg:tracking-tight">
+  <h2 class="text-4xl text-center lg:text-5xl font-bold lg:tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
     Our Stack
   </h2>
-  <p class="text-lg text-center mt-2 text-slate-600">
+  <p class="text-lg text-center mt-4 text-slate-600 max-w-2xl mx-auto">
     Here are some of our choice tools and weapons.
-  </p>  <div class="flex gap-8 md:gap-20 items-center justify-center mt-10 flex-wrap">
-    <Icon class="size-8 md:size-10 text-blue-500" name="simple-icons:react" />
-    <Icon class="size-8 md:size-10 text-green-500" name="simple-icons:vuedotjs" />
-    <Icon class="size-8 md:size-10 text-black" name="simple-icons:nextdotjs" />
-    <Icon class="size-8 md:size-10 text-blue-600" name="simple-icons:typescript" />
-    <Icon class="size-8 md:size-10 text-yellow-500" name="simple-icons:python" />
-    <Icon class="size-8 md:size-10 text-red-500" name="simple-icons:git" />
-    <Icon class="size-8 md:size-10 text-green-500" name="simple-icons:mongodb" />
-    <Icon class="size-8 md:size-10 text-cyan-400" name="simple-icons:tailwindcss" />
-    <Icon class="size-8 md:size-10 text-green-600" name="simple-icons:pandas" />
+  </p>
+  <div class="flex gap-8 md:gap-12 items-center justify-center mt-12 flex-wrap">
+    <div class="group p-4 rounded-2xl hover:bg-slate-50 transition-all duration-300">
+      <Icon class="size-10 md:size-12 text-blue-500 group-hover:scale-110 transition-transform duration-300" name="simple-icons:react" />
+    </div>
+    <div class="group p-4 rounded-2xl hover:bg-slate-50 transition-all duration-300">
+      <Icon class="size-10 md:size-12 text-green-500 group-hover:scale-110 transition-transform duration-300" name="simple-icons:vuedotjs" />
+    </div>
+    <div class="group p-4 rounded-2xl hover:bg-slate-50 transition-all duration-300">
+      <Icon class="size-10 md:size-12 text-black group-hover:scale-110 transition-transform duration-300" name="simple-icons:nextdotjs" />
+    </div>
+    <div class="group p-4 rounded-2xl hover:bg-slate-50 transition-all duration-300">
+      <Icon class="size-10 md:size-12 text-blue-600 group-hover:scale-110 transition-transform duration-300" name="simple-icons:typescript" />
+    </div>
+    <div class="group p-4 rounded-2xl hover:bg-slate-50 transition-all duration-300">
+      <Icon class="size-10 md:size-12 text-yellow-500 group-hover:scale-110 transition-transform duration-300" name="simple-icons:python" />
+    </div>
+    <div class="group p-4 rounded-2xl hover:bg-slate-50 transition-all duration-300">
+      <Icon class="size-10 md:size-12 text-red-500 group-hover:scale-110 transition-transform duration-300" name="simple-icons:git" />
+    </div>
+    <div class="group p-4 rounded-2xl hover:bg-slate-50 transition-all duration-300">
+      <Icon class="size-10 md:size-12 text-green-500 group-hover:scale-110 transition-transform duration-300" name="simple-icons:mongodb" />
+    </div>
+    <div class="group p-4 rounded-2xl hover:bg-slate-50 transition-all duration-300">
+      <Icon class="size-10 md:size-12 text-cyan-400 group-hover:scale-110 transition-transform duration-300" name="simple-icons:tailwindcss" />
+    </div>
+    <div class="group p-4 rounded-2xl hover:bg-slate-50 transition-all duration-300">
+      <Icon class="size-10 md:size-12 text-green-600 group-hover:scale-110 transition-transform duration-300" name="simple-icons:pandas" />
+    </div>
   </div>
 </div>
 
