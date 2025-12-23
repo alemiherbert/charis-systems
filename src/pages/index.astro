@@ -66,12 +66,12 @@ const metadata = {
         const scene = new THREE.Scene();
         const isMobile = window.innerWidth < 768;
         const camera = new THREE.PerspectiveCamera(isMobile ? 70 : 60, container.clientWidth / container.clientHeight, 0.1, 1000);
-        // Position camera to show solar system to the RIGHT of the screen
-        // Wide screens: sun about 30% from right edge - camera looks to the RIGHT (positive x)
-        // Mobile: sun about 40% from right and 40% from top
-        // Camera positioned on the LEFT, looking at positive X (right side) to put solar system on RIGHT
-        camera.position.set(isMobile ? -15 : -20, isMobile ? 18 : 15, isMobile ? 35 : 35);
-        camera.lookAt(isMobile ? 10 : 15, isMobile ? 5 : 0, 0);
+        // Position camera to show solar system to the RIGHT of the screen (opposite the text on left)
+        // The sun is at origin (0,0,0), so we need to offset the entire view to the right
+        // We position camera looking from above-left, and shift lookAt to the right
+        // This makes the sun appear on the right side of the viewport
+        camera.position.set(isMobile ? -10 : -15, isMobile ? 10 : 12, isMobile ? 30 : 35);
+        camera.lookAt(isMobile ? 15 : 20, isMobile ? -5 : -3, 0);
 
         const renderer = new THREE.WebGLRenderer({ 
           antialias: true, 
