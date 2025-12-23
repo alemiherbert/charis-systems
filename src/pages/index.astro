@@ -17,28 +17,28 @@ const metadata = {
 
 <Layout metadata={metadata}>
   <!-- Custom Hero with 3D Solar System Animation -->
-  <section class="relative md:-mt-[76px] not-prose min-h-[80vh] overflow-hidden">
+  <section class="relative md:-mt-[76px] not-prose min-h-screen overflow-hidden">
     <!-- Background gradient -->
     <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/20 dark:from-slate-900 dark:via-indigo-950/30 dark:to-purple-950/20"></div>
     
-    <!-- Three.js Solar System Container - positioned to the right -->
-    <div id="solar-system-container" class="absolute right-0 top-0 w-[60vw] h-full pointer-events-none" aria-hidden="true"></div>
+    <!-- Three.js Solar System Container - full screen background -->
+    <div id="solar-system-container" class="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true"></div>
     
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 min-h-screen flex items-center">
       <div class="pt-0 md:pt-[76px]"></div>
-      <div class="py-12 md:py-20 lg:py-28">
+      <div class="py-12 md:py-20 lg:py-0 w-full">
         <!-- Text content - positioned to the left -->
-        <div class="max-w-2xl text-left pb-10 md:pb-16">
-          <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tighter tracking-tighter mb-6 font-heading dark:text-gray-200">
+        <div class="max-w-2xl text-left pb-10 md:pb-16 lg:pb-0">
+          <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tighter tracking-tighter mb-4 sm:mb-6 font-heading dark:text-gray-200">
             <span class="text-primary">Expert Tech</span><br />
             Solutions on Demand
           </h1>
-          <p class="text-xl text-muted mb-8 dark:text-slate-300 max-w-xl">
+          <p class="text-lg sm:text-xl text-muted mb-6 sm:mb-8 dark:text-slate-300 max-w-xl">
             Web design, development, ERP implementation, and consulting — all with 
             <span class="font-bold text-accent">predictable monthly pricing</span> and unlimited requests.
             No hiring headaches. No long-term commitments.
           </p>
-          <div class="flex flex-col sm:flex-row gap-4">
+          <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <Button variant="primary" text="Get Started" href="/contact" icon="tabler:arrow-right" />
             <Button text="Our Services" href="/services" />
           </div>
@@ -64,8 +64,9 @@ const metadata = {
 
         // Setup scene
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.set(0, 15, 25);
+        const isMobile = window.innerWidth < 768;
+        const camera = new THREE.PerspectiveCamera(isMobile ? 70 : 60, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(isMobile ? 15 : 20, isMobile ? 8 : 12, isMobile ? 30 : 25);
         camera.lookAt(0, 0, 0);
 
         const renderer = new THREE.WebGLRenderer({ 
@@ -384,9 +385,12 @@ const metadata = {
               }
             });
 
-            // Subtle camera movement based on mouse
-            camera.position.x = 25 + mouseX * 3;
-            camera.position.y = 2 + mouseY * 2;
+            // Subtle camera movement based on mouse - adjusted for fullscreen
+            const isMobile = window.innerWidth < 768;
+            const baseX = isMobile ? 15 : 20;
+            const baseY = isMobile ? 8 : 12;
+            camera.position.x = baseX + mouseX * 3;
+            camera.position.y = baseY + mouseY * 2;
             camera.lookAt(0, 0, 0);
 
             // Rotate stars slowly
