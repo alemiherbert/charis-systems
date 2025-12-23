@@ -66,8 +66,11 @@ const metadata = {
         const scene = new THREE.Scene();
         const isMobile = window.innerWidth < 768;
         const camera = new THREE.PerspectiveCamera(isMobile ? 70 : 60, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.set(isMobile ? 15 : 20, isMobile ? 8 : 12, isMobile ? 30 : 25);
-        camera.lookAt(0, 0, 0);
+        // Position camera to show solar system to the right of the screen
+        // Wide screens: sun about 30% from right edge (offset camera left)
+        // Mobile: sun about 40% from right and 40% from top
+        camera.position.set(isMobile ? 5 : -8, isMobile ? 18 : 12, isMobile ? 35 : 30);
+        camera.lookAt(isMobile ? 8 : 12, isMobile ? 5 : 0, 0);
 
         const renderer = new THREE.WebGLRenderer({ 
           antialias: true, 
@@ -260,9 +263,9 @@ const metadata = {
           planets.push(planetObj);
         });
 
-        // Add stars in the background
+        // Add stars in the background - 20% more stars for denser field
         const starGeometry = new THREE.BufferGeometry();
-        const starCount = 300;
+        const starCount = 360;
         const starPositions = new Float32Array(starCount * 3);
         const starSizes = new Float32Array(starCount);
         
@@ -385,13 +388,17 @@ const metadata = {
               }
             });
 
-            // Subtle camera movement based on mouse - adjusted for fullscreen
+            // Subtle camera movement based on mouse - offset for right-side positioning
             const isMobile = window.innerWidth < 768;
-            const baseX = isMobile ? 15 : 20;
-            const baseY = isMobile ? 8 : 12;
+            // Wide screens: offset left to show sun to the right
+            // Mobile: position to show sun upper-right
+            const baseX = isMobile ? 5 : -8;
+            const baseY = isMobile ? 18 : 12;
+            const lookAtX = isMobile ? 8 : 12;
+            const lookAtY = isMobile ? 5 : 0;
             camera.position.x = baseX + mouseX * 3;
             camera.position.y = baseY + mouseY * 2;
-            camera.lookAt(0, 0, 0);
+            camera.lookAt(lookAtX, lookAtY, 0);
 
             // Rotate stars slowly
             stars.rotation.y += 0.0002;
