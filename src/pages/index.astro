@@ -28,7 +28,7 @@ const metadata = {
       <div class="pt-0 md:pt-[76px]"></div>
       <div class="py-8 md:py-12 lg:py-0 w-full">
         <!-- Text content - positioned to the left -->
-        <div class="max-w-2xl text-left pb-6 md:pb-10 lg:pb-0">
+        <div class="max-w-2xl text-left pb-2 md:pb-4 lg:pb-0">
           <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight mb-3 sm:mb-4 font-heading dark:text-gray-200">
             <span class="text-primary">Expert Tech Solutions</span><br />
             on Demand
@@ -90,9 +90,9 @@ const metadata = {
 
         // Point light from the sun - brighter for better illumination
         // Define offset to move solar system to the right/down and scale multiplier
-        const solarSystemOffsetX = isMobile ? 45 : 75;
+        const solarSystemOffsetX = isMobile ? 55 : 90;
         const solarSystemOffsetY = isMobile ? 0 : -4; // Move down
-        const solarSystemScale = 3.2; // 3.2x the original size
+        const solarSystemScale = 3.5; // 3.5x the original size
         
         const sunLight = new THREE.PointLight(0xfff4e6, 3, 150);
         sunLight.position.set(solarSystemOffsetX, solarSystemOffsetY, 0);
