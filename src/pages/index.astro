@@ -1,13 +1,13 @@
 ---
 import Layout from '~/layouts/PageLayout.astro';
 
-import Hero from '~/components/widgets/Hero.astro';
 import Features from '~/components/widgets/Features.astro';
 import Steps from '~/components/widgets/Steps.astro';
 import Content from '~/components/widgets/Content.astro';
 import FAQs from '~/components/widgets/FAQs.astro';
 import Stats from '~/components/widgets/Stats.astro';
 import CallToAction from '~/components/widgets/CallToAction.astro';
+import Button from '~/components/ui/Button.astro';
 
 const metadata = {
   title: 'Charis Systems — Expert Tech Solutions on Demand',
@@ -16,171 +16,177 @@ const metadata = {
 ---
 
 <Layout metadata={metadata}>
-  <!-- Hero Widget with ASCII Laptop Background -->
-  <Hero
-    actions={[
-      {
-        variant: 'primary',
-        text: 'Get Started',
-        href: '/contact',
-        icon: 'tabler:arrow-right',
-      },
-      { text: 'Our Services', href: '/services' },
-    ]}
-  >
-    <Fragment slot="bg">
-      <div class="absolute inset-0 overflow-hidden">
-        <pre id="ascii-laptop" class="absolute inset-0 flex items-center justify-center text-indigo-300/30 dark:text-indigo-500/20 font-mono text-[6px] sm:text-[8px] md:text-[10px] lg:text-[12px] leading-none whitespace-pre select-none pointer-events-none" aria-hidden="true"></pre>
+  <!-- Custom Hero with Amorphous Droplet Animation -->
+  <section class="relative md:-mt-[76px] not-prose min-h-[80vh] overflow-hidden">
+    <!-- Background gradient -->
+    <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/20 dark:from-slate-900 dark:via-indigo-950/30 dark:to-purple-950/20"></div>
+    
+    <!-- Amorphous Droplet Container - positioned to the right -->
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <svg id="droplet-svg" class="absolute right-0 top-1/2 -translate-y-1/2 w-[50vw] h-[80vh] md:w-[45vw] md:h-[90vh]" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="dropletGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.4" />
+            <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:0.3" />
+            <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.2" />
+          </linearGradient>
+          <linearGradient id="dropletGradient2" x1="100%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#4f46e5;stop-opacity:0.3" />
+            <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0.15" />
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        <!-- Main droplet shape -->
+        <path id="droplet-main" fill="url(#dropletGradient)" filter="url(#glow)" />
+        <!-- Secondary droplet for depth -->
+        <path id="droplet-secondary" fill="url(#dropletGradient2)" />
+      </svg>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="pt-0 md:pt-[76px]"></div>
+      <div class="py-12 md:py-20 lg:py-28">
+        <!-- Text content - positioned to the left -->
+        <div class="max-w-2xl text-left pb-10 md:pb-16">
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tighter tracking-tighter mb-6 font-heading dark:text-gray-200">
+            <span class="text-primary">Expert Tech</span><br />
+            Solutions on Demand
+          </h1>
+          <p class="text-xl text-muted mb-8 dark:text-slate-300 max-w-xl">
+            Web design, development, ERP implementation, and consulting — all with 
+            <span class="font-bold text-accent">predictable monthly pricing</span> and unlimited requests.
+            No hiring headaches. No long-term commitments.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4">
+            <Button variant="primary" text="Get Started" href="/contact" icon="tabler:arrow-right" />
+            <Button text="Our Services" href="/services" />
+          </div>
+        </div>
       </div>
-      <script>
-        function initAsciiAnimation() {
-          const container = document.getElementById('ascii-laptop');
-          if (!container) return;
+    </div>
+    
+    <script>
+      function initDropletAnimation() {
+        const mainDroplet = document.getElementById('droplet-main');
+        const secondaryDroplet = document.getElementById('droplet-secondary');
+        if (!mainDroplet || !secondaryDroplet) return;
 
-          // ASCII laptop frames for animation
-          const laptopFrames = [
-            // Frame 1 - Screen content variation 1
-`
-                    ╔════════════════════════════════════════════════════════════╗
-                    ║  ┌──────────────────────────────────────────────────────┐  ║
-                    ║  │                                                      │  ║
-                    ║  │    ██████╗██╗  ██╗ █████╗ ██████╗ ██╗███████╗       │  ║
-                    ║  │   ██╔════╝██║  ██║██╔══██╗██╔══██╗██║██╔════╝       │  ║
-                    ║  │   ██║     ███████║███████║██████╔╝██║███████╗       │  ║
-                    ║  │   ██║     ██╔══██║██╔══██║██╔══██╗██║╚════██║       │  ║
-                    ║  │   ╚██████╗██║  ██║██║  ██║██║  ██║██║███████║       │  ║
-                    ║  │    ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚══════╝       │  ║
-                    ║  │                                                      │  ║
-                    ║  │   > Building the future_                             │  ║
-                    ║  │                                                      │  ║
-                    ║  │   ████████░░░░░░░░░░░░░░░░░░░░  Loading...  35%     │  ║
-                    ║  │                                                      │  ║
-                    ║  └──────────────────────────────────────────────────────┘  ║
-                    ║════════════════════════════════════════════════════════════║
-                    ╚══════════════════════════════════════════════════════════════╝
-                         ╔══════════════════════════════════════════════════════╗
-                         ║░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░║
-                         ╚══════════════════════════════════════════════════════╝
-`,
-            // Frame 2 - Screen content variation 2
-`
-                    ╔════════════════════════════════════════════════════════════╗
-                    ║  ┌──────────────────────────────────────────────────────┐  ║
-                    ║  │                                                      │  ║
-                    ║  │    ██████╗██╗  ██╗ █████╗ ██████╗ ██╗███████╗       │  ║
-                    ║  │   ██╔════╝██║  ██║██╔══██╗██╔══██╗██║██╔════╝       │  ║
-                    ║  │   ██║     ███████║███████║██████╔╝██║███████╗       │  ║
-                    ║  │   ██║     ██╔══██║██╔══██║██╔══██╗██║╚════██║       │  ║
-                    ║  │   ╚██████╗██║  ██║██║  ██║██║  ██║██║███████║       │  ║
-                    ║  │    ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚══════╝       │  ║
-                    ║  │                                                      │  ║
-                    ║  │   > Building the future█                             │  ║
-                    ║  │                                                      │  ║
-                    ║  │   ██████████████░░░░░░░░░░░░░░  Loading...  55%     │  ║
-                    ║  │                                                      │  ║
-                    ║  └──────────────────────────────────────────────────────┘  ║
-                    ║════════════════════════════════════════════════════════════║
-                    ╚══════════════════════════════════════════════════════════════╝
-                         ╔══════════════════════════════════════════════════════╗
-                         ║░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░║
-                         ╚══════════════════════════════════════════════════════╝
-`,
-            // Frame 3 - Screen content variation 3
-`
-                    ╔════════════════════════════════════════════════════════════╗
-                    ║  ┌──────────────────────────────────────────────────────┐  ║
-                    ║  │                                                      │  ║
-                    ║  │    ██████╗██╗  ██╗ █████╗ ██████╗ ██╗███████╗       │  ║
-                    ║  │   ██╔════╝██║  ██║██╔══██╗██╔══██╗██║██╔════╝       │  ║
-                    ║  │   ██║     ███████║███████║██████╔╝██║███████╗       │  ║
-                    ║  │   ██║     ██╔══██║██╔══██║██╔══██╗██║╚════██║       │  ║
-                    ║  │   ╚██████╗██║  ██║██║  ██║██║  ██║██║███████║       │  ║
-                    ║  │    ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚══════╝       │  ║
-                    ║  │                                                      │  ║
-                    ║  │   > Building the future_                             │  ║
-                    ║  │                                                      │  ║
-                    ║  │   ████████████████████░░░░░░░░  Loading...  75%     │  ║
-                    ║  │                                                      │  ║
-                    ║  └──────────────────────────────────────────────────────┘  ║
-                    ║════════════════════════════════════════════════════════════║
-                    ╚══════════════════════════════════════════════════════════════╝
-                         ╔══════════════════════════════════════════════════════╗
-                         ║░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░║
-                         ╚══════════════════════════════════════════════════════╝
-`,
-            // Frame 4 - Screen content variation 4 (complete)
-`
-                    ╔════════════════════════════════════════════════════════════╗
-                    ║  ┌──────────────────────────────────────────────────────┐  ║
-                    ║  │                                                      │  ║
-                    ║  │    ██████╗██╗  ██╗ █████╗ ██████╗ ██╗███████╗       │  ║
-                    ║  │   ██╔════╝██║  ██║██╔══██╗██╔══██╗██║██╔════╝       │  ║
-                    ║  │   ██║     ███████║███████║██████╔╝██║███████╗       │  ║
-                    ║  │   ██║     ██╔══██║██╔══██║██╔══██╗██║╚════██║       │  ║
-                    ║  │   ╚██████╗██║  ██║██║  ██║██║  ██║██║███████║       │  ║
-                    ║  │    ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚══════╝       │  ║
-                    ║  │                                                      │  ║
-                    ║  │   > Building the future█                             │  ║
-                    ║  │                                                      │  ║
-                    ║  │   ████████████████████████████  Complete!   100%    │  ║
-                    ║  │                                                      │  ║
-                    ║  └──────────────────────────────────────────────────────┘  ║
-                    ║════════════════════════════════════════════════════════════║
-                    ╚══════════════════════════════════════════════════════════════╝
-                         ╔══════════════════════════════════════════════════════╗
-                         ║░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░║
-                         ╚══════════════════════════════════════════════════════╝
-`
-          ];
+        let animationId: number;
+        let time = 0;
+        let isVisible = true;
 
-          let currentFrame = 0;
-          let animationId: number;
-          let isVisible = true;
-
-          const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => { isVisible = entry.isIntersecting; });
-          }, { threshold: 0.1 });
+        // Generate random blob path using superellipse/organic shape
+        function generateBlobPath(
+          centerX: number, 
+          centerY: number, 
+          baseRadius: number, 
+          time: number, 
+          offset: number = 0
+        ): string {
+          const points: string[] = [];
+          const numPoints = 8;
           
-          observer.observe(container);
-
-          function animate() {
-            if (isVisible) {
-              container.textContent = laptopFrames[currentFrame];
-              currentFrame = (currentFrame + 1) % laptopFrames.length;
+          for (let i = 0; i < numPoints; i++) {
+            const angle = (i / numPoints) * Math.PI * 2;
+            
+            // Multiple sine waves for organic movement
+            const wave1 = Math.sin(time * 0.8 + angle * 2 + offset) * 25;
+            const wave2 = Math.sin(time * 1.2 + angle * 3 + offset * 1.5) * 15;
+            const wave3 = Math.sin(time * 0.5 + angle + offset * 0.7) * 20;
+            
+            const radius = baseRadius + wave1 + wave2 + wave3;
+            
+            const x = centerX + Math.cos(angle) * radius;
+            const y = centerY + Math.sin(angle) * radius;
+            
+            if (i === 0) {
+              points.push(`M ${x} ${y}`);
+            } else {
+              // Use quadratic curves for smoother blob shape
+              const prevAngle = ((i - 1) / numPoints) * Math.PI * 2;
+              const prevWave1 = Math.sin(time * 0.8 + prevAngle * 2 + offset) * 25;
+              const prevWave2 = Math.sin(time * 1.2 + prevAngle * 3 + offset * 1.5) * 15;
+              const prevWave3 = Math.sin(time * 0.5 + prevAngle + offset * 0.7) * 20;
+              const prevRadius = baseRadius + prevWave1 + prevWave2 + prevWave3;
+              
+              const midAngle = (prevAngle + angle) / 2;
+              const midRadius = (prevRadius + radius) / 2 * 1.1;
+              const cpX = centerX + Math.cos(midAngle) * midRadius;
+              const cpY = centerY + Math.sin(midAngle) * midRadius;
+              
+              points.push(`Q ${cpX} ${cpY} ${x} ${y}`);
             }
-            animationId = setTimeout(animate, 800);
           }
-
-          animate();
-
-          function cleanup() {
-            clearTimeout(animationId);
-            observer.disconnect();
-          }
-
-          window.addEventListener('beforeunload', cleanup);
-          document.addEventListener('astro:before-swap', cleanup);
+          
+          // Close the path smoothly
+          const firstAngle = 0;
+          const lastAngle = ((numPoints - 1) / numPoints) * Math.PI * 2;
+          const midAngle = (lastAngle + firstAngle + Math.PI * 2) / 2;
+          
+          const firstWave = Math.sin(time * 0.8 + offset) * 25 + Math.sin(time * 1.2 + offset * 1.5) * 15 + Math.sin(time * 0.5 + offset * 0.7) * 20;
+          const lastWave = Math.sin(time * 0.8 + lastAngle * 2 + offset) * 25 + Math.sin(time * 1.2 + lastAngle * 3 + offset * 1.5) * 15 + Math.sin(time * 0.5 + lastAngle + offset * 0.7) * 20;
+          
+          const firstRadius = baseRadius + firstWave;
+          const lastRadius = baseRadius + lastWave;
+          const midRadius = (firstRadius + lastRadius) / 2 * 1.1;
+          
+          const cpX = centerX + Math.cos(midAngle) * midRadius;
+          const cpY = centerY + Math.sin(midAngle) * midRadius;
+          const endX = centerX + Math.cos(firstAngle) * firstRadius;
+          const endY = centerY + Math.sin(firstAngle) * firstRadius;
+          
+          points.push(`Q ${cpX} ${cpY} ${endX} ${endY}`);
+          points.push('Z');
+          
+          return points.join(' ');
         }
 
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', initAsciiAnimation);
-        } else {
-          initAsciiAnimation();
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => { isVisible = entry.isIntersecting; });
+        }, { threshold: 0.1 });
+        
+        const svg = document.getElementById('droplet-svg');
+        if (svg) observer.observe(svg);
+
+        function animate() {
+          if (isVisible) {
+            time += 0.02;
+            
+            // Main droplet - larger, centered in svg
+            const mainPath = generateBlobPath(200, 200, 120, time, 0);
+            mainDroplet.setAttribute('d', mainPath);
+            
+            // Secondary droplet - slightly offset and smaller
+            const secondaryPath = generateBlobPath(200, 200, 100, time, Math.PI);
+            secondaryDroplet.setAttribute('d', secondaryPath);
+          }
+          animationId = requestAnimationFrame(animate);
         }
-      </script>
-    </Fragment>
 
-    <Fragment slot="title">
-      <span class="text-primary">Expert Tech</span><br />
-      Solutions on Demand
-    </Fragment>
+        animate();
 
-    <Fragment slot="subtitle">
-      Web design, development, ERP implementation, and consulting — all with 
-      <span class="font-bold text-accent">predictable monthly pricing</span> and unlimited requests.
-      No hiring headaches. No long-term commitments.
-    </Fragment>
-  </Hero>
+        function cleanup() {
+          cancelAnimationFrame(animationId);
+          observer.disconnect();
+        }
+
+        window.addEventListener('beforeunload', cleanup);
+        document.addEventListener('astro:before-swap', cleanup);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDropletAnimation);
+      } else {
+        initDropletAnimation();
+      }
+    </script>
+  </section>
 
   <!-- Features Widget -->
   <Features
