@@ -17,26 +17,25 @@ const metadata = {
 
 <Layout metadata={metadata}>
   <!-- Custom Hero with 3D Solar System Animation -->
-  <section class="relative md:-mt-[76px] not-prose min-h-screen overflow-hidden">
+  <section class="relative md:-mt-[76px] not-prose h-[80vh] overflow-hidden">
     <!-- Background gradient -->
     <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/20 dark:from-slate-900 dark:via-indigo-950/30 dark:to-purple-950/20"></div>
     
     <!-- Three.js Solar System Container - full screen background -->
     <div id="solar-system-container" class="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true"></div>
     
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 min-h-screen flex items-center">
-      <div class="pt-0 md:pt-[76px]"></div>
-      <div class="py-12 md:py-20 lg:py-0 w-full">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 h-full flex items-center">
+      <div class="pt-8 md:pt-[100px]"></div>
+      <div class="py-8 md:py-12 lg:py-0 w-full">
         <!-- Text content - positioned to the left -->
-        <div class="max-w-2xl text-left pb-10 md:pb-16 lg:pb-0">
-          <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tighter tracking-tighter mb-4 sm:mb-6 font-heading dark:text-gray-200">
-            <span class="text-primary">Expert Tech</span><br />
-            Solutions on Demand
+        <div class="max-w-2xl text-left pb-0 md:pb-2 lg:pb-0">
+          <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight mb-3 sm:mb-4 font-heading dark:text-gray-200">
+            <span class="text-primary">Expert Tech Solutions</span><br />
+            on Demand
           </h1>
-          <p class="text-lg sm:text-xl text-muted mb-6 sm:mb-8 dark:text-slate-300 max-w-xl">
+          <p class="text-base sm:text-lg text-muted mb-5 sm:mb-6 dark:text-slate-300 max-w-lg">
             Web design, development, ERP implementation, and consulting — all with 
             <span class="font-bold text-accent">predictable monthly pricing</span> and unlimited requests.
-            No hiring headaches. No long-term commitments.
           </p>
           <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <Button variant="primary" text="Get Started" href="/contact" icon="tabler:arrow-right" />
@@ -90,8 +89,13 @@ const metadata = {
         scene.add(ambientLight);
 
         // Point light from the sun - brighter for better illumination
+        // Define offset to move solar system to the right/down and scale multiplier
+        const solarSystemOffsetX = isMobile ? 50 : 120;
+        const solarSystemOffsetY = isMobile ? 0 : -10; // Move down
+        const solarSystemScale = isMobile ? 4 : 5; // 5x on large screens, 4x on mobile
+        
         const sunLight = new THREE.PointLight(0xfff4e6, 3, 150);
-        sunLight.position.set(0, 0, 0);
+        sunLight.position.set(solarSystemOffsetX, solarSystemOffsetY, 0);
         sunLight.castShadow = true;
         sunLight.shadow.mapSize.width = 1024;
         sunLight.shadow.mapSize.height = 1024;
@@ -109,7 +113,7 @@ const metadata = {
 
         // Create realistic 3D Sun with layered effect
         // Inner core - bright yellow
-        const sunCoreGeometry = new THREE.SphereGeometry(2.0, 64, 64);
+        const sunCoreGeometry = new THREE.SphereGeometry(2.0 * solarSystemScale, 64, 64);
         const sunCoreMaterial = new THREE.MeshPhongMaterial({ 
           color: 0xffffff,
           emissive: 0xffdd00,
@@ -118,10 +122,11 @@ const metadata = {
           specular: 0xffffaa
         });
         const sunCore = new THREE.Mesh(sunCoreGeometry, sunCoreMaterial);
+        sunCore.position.set(solarSystemOffsetX, solarSystemOffsetY, 0);
         scene.add(sunCore);
 
         // Sun surface layer with texture-like variation
-        const sunSurfaceGeometry = new THREE.SphereGeometry(2.5, 64, 64);
+        const sunSurfaceGeometry = new THREE.SphereGeometry(2.5 * solarSystemScale, 64, 64);
         const sunSurfaceMaterial = new THREE.MeshPhongMaterial({ 
           color: 0xffa500,
           emissive: 0xff8800,
@@ -132,46 +137,50 @@ const metadata = {
           specular: 0xffcc00
         });
         const sunSurface = new THREE.Mesh(sunSurfaceGeometry, sunSurfaceMaterial);
+        sunSurface.position.set(solarSystemOffsetX, solarSystemOffsetY, 0);
         scene.add(sunSurface);
 
         // Sun corona - outer glow layer 1
-        const sunGlowGeometry = new THREE.SphereGeometry(3.2, 48, 48);
+        const sunGlowGeometry = new THREE.SphereGeometry(3.2 * solarSystemScale, 48, 48);
         const sunGlowMaterial = new THREE.MeshBasicMaterial({ 
           color: 0xffaa00,
           transparent: true,
           opacity: 0.35
         });
         const sunGlow = new THREE.Mesh(sunGlowGeometry, sunGlowMaterial);
+        sunGlow.position.set(solarSystemOffsetX, solarSystemOffsetY, 0);
         scene.add(sunGlow);
 
         // Sun corona - outer glow layer 2 (larger, more transparent)
-        const sunGlow2Geometry = new THREE.SphereGeometry(4.0, 32, 32);
+        const sunGlow2Geometry = new THREE.SphereGeometry(4.0 * solarSystemScale, 32, 32);
         const sunGlow2Material = new THREE.MeshBasicMaterial({ 
           color: 0xffdd66,
           transparent: true,
           opacity: 0.2
         });
         const sunGlow2 = new THREE.Mesh(sunGlow2Geometry, sunGlow2Material);
+        sunGlow2.position.set(solarSystemOffsetX, solarSystemOffsetY, 0);
         scene.add(sunGlow2);
 
         // Sun corona - outermost subtle glow
-        const sunGlow3Geometry = new THREE.SphereGeometry(5.0, 24, 24);
+        const sunGlow3Geometry = new THREE.SphereGeometry(5.0 * solarSystemScale, 24, 24);
         const sunGlow3Material = new THREE.MeshBasicMaterial({ 
           color: 0xffeeaa,
           transparent: true,
           opacity: 0.1
         });
         const sunGlow3 = new THREE.Mesh(sunGlow3Geometry, sunGlow3Material);
+        sunGlow3.position.set(solarSystemOffsetX, solarSystemOffsetY, 0);
         scene.add(sunGlow3);
 
-        // Planet data with brighter colors for better visibility
+        // Planet data with brighter colors for better visibility (scaled by solarSystemScale)
         const planetData = [
-          { orbit: 5, size: 0.4, color: 0x9ca3ff, emissive: 0x4f46e5, speed: 1.5, angle: 0, name: 'Mercury' },
-          { orbit: 7, size: 0.6, color: 0xc4b5fd, emissive: 0x8b5cf6, speed: 1.2, angle: 2.1, name: 'Venus' },
-          { orbit: 9.5, size: 0.7, color: 0x60a5fa, emissive: 0x3b82f6, speed: 1.0, angle: 4.2, name: 'Earth' },
-          { orbit: 12, size: 0.5, color: 0xfca5a5, emissive: 0xef4444, speed: 0.8, angle: 1.0, name: 'Mars' },
-          { orbit: 16, size: 1.2, color: 0xfcd34d, emissive: 0xf59e0b, speed: 0.5, angle: 3.5, name: 'Jupiter' },
-          { orbit: 20, size: 1.0, color: 0xd8b4fe, emissive: 0xa855f7, speed: 0.35, angle: 5.0, name: 'Saturn' },
+          { orbit: 5 * solarSystemScale, size: 0.4 * solarSystemScale, color: 0x9ca3ff, emissive: 0x4f46e5, speed: 1.5, angle: 0, name: 'Mercury' },
+          { orbit: 7 * solarSystemScale, size: 0.6 * solarSystemScale, color: 0xc4b5fd, emissive: 0x8b5cf6, speed: 1.2, angle: 2.1, name: 'Venus' },
+          { orbit: 9.5 * solarSystemScale, size: 0.7 * solarSystemScale, color: 0x60a5fa, emissive: 0x3b82f6, speed: 1.0, angle: 4.2, name: 'Earth' },
+          { orbit: 12 * solarSystemScale, size: 0.5 * solarSystemScale, color: 0xfca5a5, emissive: 0xef4444, speed: 0.8, angle: 1.0, name: 'Mars' },
+          { orbit: 16 * solarSystemScale, size: 1.2 * solarSystemScale, color: 0xfcd34d, emissive: 0xf59e0b, speed: 0.5, angle: 3.5, name: 'Jupiter' },
+          { orbit: 20 * solarSystemScale, size: 1.0 * solarSystemScale, color: 0xd8b4fe, emissive: 0xa855f7, speed: 0.35, angle: 5.0, name: 'Saturn' },
         ];
 
         interface Planet {
@@ -230,9 +239,9 @@ const metadata = {
             glowMesh: glowMesh
           };
 
-          // Add ring to Saturn with more detail - brighter
+          // Add ring to Saturn with more detail - brighter (scaled)
           if (data.name === 'Saturn') {
-            const ringGeometry = new THREE.RingGeometry(1.3, 2.2, 64);
+            const ringGeometry = new THREE.RingGeometry(1.3 * solarSystemScale, 2.2 * solarSystemScale, 64);
             const ringMaterial = new THREE.MeshPhongMaterial({ 
               color: 0xe9d5ff,
               emissive: 0xa855f7,
@@ -355,7 +364,8 @@ const metadata = {
             // Animate planets
             planets.forEach((planet) => {
               planet.angle += planet.speed * 0.01;
-              planet.mesh.position.x = Math.cos(planet.angle) * planet.orbit;
+              planet.mesh.position.x = Math.cos(planet.angle) * planet.orbit + solarSystemOffsetX;
+              planet.mesh.position.y = solarSystemOffsetY;
               planet.mesh.position.z = Math.sin(planet.angle) * planet.orbit;
               planet.mesh.rotation.y += 0.015;
               
