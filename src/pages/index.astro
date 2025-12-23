@@ -22,7 +22,8 @@ const metadata = {
     <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/20 dark:from-slate-900 dark:via-indigo-950/30 dark:to-purple-950/20"></div>
     
     <!-- Three.js Rubik's Cube Container - full screen background -->
-    <div id="rubiks-cube-container" class="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true"></div>
+    <!-- Blurred overlay on mobile for better text readability -->
+    <div id="rubiks-cube-container" class="absolute inset-0 w-full h-full pointer-events-none md:backdrop-blur-none backdrop-blur-sm" aria-hidden="true"></div>
     
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 min-h-screen flex items-center">
       <div class="pt-0 md:pt-[76px]"></div>
@@ -116,15 +117,7 @@ const metadata = {
         fillLight.position.set(-10, -10, -10);
         scene.add(fillLight);
 
-        // Update lighting when theme changes
-        function updateLighting() {
-          const dark = isDarkMode();
-          ambientLight.intensity = dark ? 0.6 : 0.9;
-          directionalLight.intensity = dark ? 0.8 : 0.4;
-          fillLight.intensity = dark ? 0.3 : 0.5;
-        }
-
-        // Listen for theme changes
+        // Listen for theme changes (updateLighting will be defined after cubies are created)
         const themeObserver = new MutationObserver((mutations) => {
           mutations.forEach((mutation) => {
             if (mutation.attributeName === 'class') {
@@ -158,20 +151,23 @@ const metadata = {
          * - Bottom face (y=-1): Yellow
          * - Front face (z=1): Red
          * - Back face (z=-1): Orange
-         * - Interior faces (not on outer layer): Black
+         * - Interior faces (not on outer layer): Theme-aware (dark gray in dark mode, light gray in light mode)
          */
         function createCubie(x: number, y: number, z: number) {
           const size = 0.95; // Slightly smaller for gaps between cubies
           const geometry = new THREE.BoxGeometry(size, size, size);
           
+          // Inner color harmonized with theme: darker in dark mode, lighter in light mode
+          const innerColor = isDarkMode() ? 0x1a1a1a : 0xcccccc;
+          
           // Materials for each face (order: right, left, top, bottom, front, back)
           const materials = [
-            new THREE.MeshPhongMaterial({ color: x === 1 ? colors.blue : 0x000000 }),   // Right (blue)
-            new THREE.MeshPhongMaterial({ color: x === -1 ? colors.green : 0x000000 }),  // Left (green)
-            new THREE.MeshPhongMaterial({ color: y === 1 ? colors.white : 0x000000 }),   // Top (white)
-            new THREE.MeshPhongMaterial({ color: y === -1 ? colors.yellow : 0x000000 }), // Bottom (yellow)
-            new THREE.MeshPhongMaterial({ color: z === 1 ? colors.red : 0x000000 }),     // Front (red)
-            new THREE.MeshPhongMaterial({ color: z === -1 ? colors.orange : 0x000000 })  // Back (orange)
+            new THREE.MeshPhongMaterial({ color: x === 1 ? colors.blue : innerColor }),   // Right (blue)
+            new THREE.MeshPhongMaterial({ color: x === -1 ? colors.green : innerColor }),  // Left (green)
+            new THREE.MeshPhongMaterial({ color: y === 1 ? colors.white : innerColor }),   // Top (white)
+            new THREE.MeshPhongMaterial({ color: y === -1 ? colors.yellow : innerColor }), // Bottom (yellow)
+            new THREE.MeshPhongMaterial({ color: z === 1 ? colors.red : innerColor }),     // Front (red)
+            new THREE.MeshPhongMaterial({ color: z === -1 ? colors.orange : innerColor })  // Back (orange)
           ];
 
           const cubie = new THREE.Mesh(geometry, materials);
@@ -198,7 +194,42 @@ const metadata = {
         
         // Position cube group to the right side
         cubeGroup.position.set(isMobile ? 6 : 10, 0, 0);
+        
+        // Triple the size on wide screens for better visibility
+        if (!isMobile) {
+          cubeGroup.scale.set(3, 3, 3);
+        }
+        
         scene.add(cubeGroup);
+
+        // Update lighting when theme changes
+        function updateLighting() {
+          const dark = isDarkMode();
+          ambientLight.intensity = dark ? 0.6 : 0.9;
+          directionalLight.intensity = dark ? 0.8 : 0.4;
+          fillLight.intensity = dark ? 0.3 : 0.5;
+          
+          // Update inner cube colors to match theme
+          const innerColor = dark ? 0x1a1a1a : 0xcccccc;
+          cubies.forEach(cubie => {
+            const materials = cubie.material as THREE.MeshPhongMaterial[];
+            const pos = cubie.position;
+            
+            // Update only inner faces (those not on the outer layer)
+            if (pos.x !== 1 && pos.x !== -1) {
+              materials[0].color.setHex(innerColor); // Right face
+              materials[1].color.setHex(innerColor); // Left face
+            }
+            if (pos.y !== 1 && pos.y !== -1) {
+              materials[2].color.setHex(innerColor); // Top face
+              materials[3].color.setHex(innerColor); // Bottom face
+            }
+            if (pos.z !== 1 && pos.z !== -1) {
+              materials[4].color.setHex(innerColor); // Front face
+              materials[5].color.setHex(innerColor); // Back face
+            }
+          });
+        }
 
         // Animation state
         interface Move {
