@@ -426,11 +426,23 @@ const metadata = {
         document.addEventListener('astro:before-swap', cleanup);
       }
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initSolarSystem);
-      } else {
-        initSolarSystem();
+      // Initialize on page load and after Astro navigation (View Transitions)
+      function initOnLoad() {
+        // Prevent double initialization
+        const container = document.getElementById('solar-system-container');
+        if (container && container.children.length === 0) {
+          initSolarSystem();
+        }
       }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initOnLoad);
+      } else {
+        initOnLoad();
+      }
+
+      // Re-initialize after Astro View Transitions navigation
+      document.addEventListener('astro:page-load', initOnLoad);
     </script>
   </section>
 
