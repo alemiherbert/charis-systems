@@ -66,12 +66,12 @@ const metadata = {
         const scene = new THREE.Scene();
         const isMobile = window.innerWidth < 768;
         const camera = new THREE.PerspectiveCamera(isMobile ? 70 : 60, container.clientWidth / container.clientHeight, 0.1, 1000);
-        // Position camera to show solar system to the right of the screen
-        // Wide screens: sun about 30% from right edge
+        // Position camera to show solar system to the RIGHT of the screen
+        // Wide screens: sun about 30% from right edge - camera looks to the RIGHT (positive x)
         // Mobile: sun about 40% from right and 40% from top
-        // Camera offset to the left (positive x) looking at center/left (negative x) puts solar system on RIGHT
-        camera.position.set(isMobile ? -5 : 15, isMobile ? 18 : 12, isMobile ? 35 : 30);
-        camera.lookAt(isMobile ? 8 : -8, isMobile ? 5 : 0, 0);
+        // Camera positioned on the LEFT, looking at positive X (right side) to put solar system on RIGHT
+        camera.position.set(isMobile ? -15 : -20, isMobile ? 18 : 15, isMobile ? 35 : 35);
+        camera.lookAt(isMobile ? 10 : 15, isMobile ? 5 : 0, 0);
 
         const renderer = new THREE.WebGLRenderer({ 
           antialias: true, 
@@ -194,18 +194,6 @@ const metadata = {
 
         // Create planets with realistic materials
         planetData.forEach((data) => {
-          // Orbit ring - hidden but thicker for when visible
-          const orbitGeometry = new THREE.RingGeometry(data.orbit - 0.15, data.orbit + 0.15, 128);
-          const orbitMaterial = new THREE.MeshBasicMaterial({ 
-            color: 0x6366f1,
-            transparent: true,
-            opacity: 0,
-            side: THREE.DoubleSide
-          });
-          const orbitRing = new THREE.Mesh(orbitGeometry, orbitMaterial);
-          orbitRing.rotation.x = -Math.PI / 2;
-          scene.add(orbitRing);
-
           // Planet with Phong material for realistic lighting - brighter settings
           const planetGeometry = new THREE.SphereGeometry(data.size, 64, 64);
           const planetMaterial = new THREE.MeshPhongMaterial({ 
@@ -391,11 +379,10 @@ const metadata = {
 
             // Subtle camera movement based on mouse - offset for right-side positioning
             const isMobile = window.innerWidth < 768;
-            // Wide screens: offset left to show sun to the right
-            // Mobile: position to show sun upper-right
-            const baseX = isMobile ? 5 : -8;
-            const baseY = isMobile ? 18 : 12;
-            const lookAtX = isMobile ? 8 : 12;
+            // Camera on the LEFT, looking at RIGHT to show solar system on the right side
+            const baseX = isMobile ? -15 : -20;
+            const baseY = isMobile ? 18 : 15;
+            const lookAtX = isMobile ? 10 : 15;
             const lookAtY = isMobile ? 5 : 0;
             camera.position.x = baseX + mouseX * 3;
             camera.position.y = baseY + mouseY * 2;
