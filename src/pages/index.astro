@@ -65,8 +65,7 @@ const metadata = {
         // Setup scene
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
-        // Edge-on view - looking at the solar system from the side so orbits appear to intersect sun
-        camera.position.set(25, 2, 5);
+        camera.position.set(0, 15, 25);
         camera.lookAt(0, 0, 0);
 
         const renderer = new THREE.WebGLRenderer({ 
@@ -190,12 +189,12 @@ const metadata = {
 
         // Create planets with realistic materials
         planetData.forEach((data) => {
-          // Orbit ring
-          const orbitGeometry = new THREE.RingGeometry(data.orbit - 0.05, data.orbit + 0.05, 128);
+          // Orbit ring - hidden but thicker for when visible
+          const orbitGeometry = new THREE.RingGeometry(data.orbit - 0.15, data.orbit + 0.15, 128);
           const orbitMaterial = new THREE.MeshBasicMaterial({ 
             color: 0x6366f1,
             transparent: true,
-            opacity: 0.12,
+            opacity: 0,
             side: THREE.DoubleSide
           });
           const orbitRing = new THREE.Mesh(orbitGeometry, orbitMaterial);
