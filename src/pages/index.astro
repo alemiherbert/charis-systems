@@ -92,7 +92,7 @@ const metadata = {
         // Define offset to move solar system to the right/down and scale multiplier
         const solarSystemOffsetX = isMobile ? 50 : 120;
         const solarSystemOffsetY = isMobile ? 0 : -10; // Move down
-        const solarSystemScale = 4; // 4x the original size
+        const solarSystemScale = isMobile ? 4 : 5; // 5x on large screens, 4x on mobile
         
         const sunLight = new THREE.PointLight(0xfff4e6, 3, 150);
         sunLight.position.set(solarSystemOffsetX, solarSystemOffsetY, 0);
