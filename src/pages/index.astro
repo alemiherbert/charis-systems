@@ -90,8 +90,11 @@ const metadata = {
         scene.add(ambientLight);
 
         // Point light from the sun - brighter for better illumination
+        // Define offset to move solar system to the right
+        const solarSystemOffsetX = isMobile ? 12 : 20;
+        
         const sunLight = new THREE.PointLight(0xfff4e6, 3, 150);
-        sunLight.position.set(0, 0, 0);
+        sunLight.position.set(solarSystemOffsetX, 0, 0);
         sunLight.castShadow = true;
         sunLight.shadow.mapSize.width = 1024;
         sunLight.shadow.mapSize.height = 1024;
@@ -118,6 +121,7 @@ const metadata = {
           specular: 0xffffaa
         });
         const sunCore = new THREE.Mesh(sunCoreGeometry, sunCoreMaterial);
+        sunCore.position.x = solarSystemOffsetX;
         scene.add(sunCore);
 
         // Sun surface layer with texture-like variation
@@ -132,6 +136,7 @@ const metadata = {
           specular: 0xffcc00
         });
         const sunSurface = new THREE.Mesh(sunSurfaceGeometry, sunSurfaceMaterial);
+        sunSurface.position.x = solarSystemOffsetX;
         scene.add(sunSurface);
 
         // Sun corona - outer glow layer 1
@@ -142,6 +147,7 @@ const metadata = {
           opacity: 0.35
         });
         const sunGlow = new THREE.Mesh(sunGlowGeometry, sunGlowMaterial);
+        sunGlow.position.x = solarSystemOffsetX;
         scene.add(sunGlow);
 
         // Sun corona - outer glow layer 2 (larger, more transparent)
@@ -152,6 +158,7 @@ const metadata = {
           opacity: 0.2
         });
         const sunGlow2 = new THREE.Mesh(sunGlow2Geometry, sunGlow2Material);
+        sunGlow2.position.x = solarSystemOffsetX;
         scene.add(sunGlow2);
 
         // Sun corona - outermost subtle glow
@@ -162,6 +169,7 @@ const metadata = {
           opacity: 0.1
         });
         const sunGlow3 = new THREE.Mesh(sunGlow3Geometry, sunGlow3Material);
+        sunGlow3.position.x = solarSystemOffsetX;
         scene.add(sunGlow3);
 
         // Planet data with brighter colors for better visibility
@@ -355,7 +363,7 @@ const metadata = {
             // Animate planets
             planets.forEach((planet) => {
               planet.angle += planet.speed * 0.01;
-              planet.mesh.position.x = Math.cos(planet.angle) * planet.orbit;
+              planet.mesh.position.x = Math.cos(planet.angle) * planet.orbit + solarSystemOffsetX;
               planet.mesh.position.z = Math.sin(planet.angle) * planet.orbit;
               planet.mesh.rotation.y += 0.015;
               
