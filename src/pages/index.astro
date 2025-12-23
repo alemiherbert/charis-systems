@@ -90,12 +90,13 @@ const metadata = {
         scene.add(ambientLight);
 
         // Point light from the sun - brighter for better illumination
-        // Define offset to move solar system to the right and scale multiplier
-        const solarSystemOffsetX = isMobile ? 25 : 40;
-        const solarSystemScale = 2; // Double the size of the solar system
+        // Define offset to move solar system to the right/up and scale multiplier
+        const solarSystemOffsetX = isMobile ? 35 : 55;
+        const solarSystemOffsetY = isMobile ? 5 : 8; // Move up
+        const solarSystemScale = 4; // 4x the original size
         
         const sunLight = new THREE.PointLight(0xfff4e6, 3, 150);
-        sunLight.position.set(solarSystemOffsetX, 0, 0);
+        sunLight.position.set(solarSystemOffsetX, solarSystemOffsetY, 0);
         sunLight.castShadow = true;
         sunLight.shadow.mapSize.width = 1024;
         sunLight.shadow.mapSize.height = 1024;
@@ -122,7 +123,7 @@ const metadata = {
           specular: 0xffffaa
         });
         const sunCore = new THREE.Mesh(sunCoreGeometry, sunCoreMaterial);
-        sunCore.position.x = solarSystemOffsetX;
+        sunCore.position.set(solarSystemOffsetX, solarSystemOffsetY, 0);
         scene.add(sunCore);
 
         // Sun surface layer with texture-like variation
@@ -137,7 +138,7 @@ const metadata = {
           specular: 0xffcc00
         });
         const sunSurface = new THREE.Mesh(sunSurfaceGeometry, sunSurfaceMaterial);
-        sunSurface.position.x = solarSystemOffsetX;
+        sunSurface.position.set(solarSystemOffsetX, solarSystemOffsetY, 0);
         scene.add(sunSurface);
 
         // Sun corona - outer glow layer 1
@@ -148,7 +149,7 @@ const metadata = {
           opacity: 0.35
         });
         const sunGlow = new THREE.Mesh(sunGlowGeometry, sunGlowMaterial);
-        sunGlow.position.x = solarSystemOffsetX;
+        sunGlow.position.set(solarSystemOffsetX, solarSystemOffsetY, 0);
         scene.add(sunGlow);
 
         // Sun corona - outer glow layer 2 (larger, more transparent)
@@ -159,7 +160,7 @@ const metadata = {
           opacity: 0.2
         });
         const sunGlow2 = new THREE.Mesh(sunGlow2Geometry, sunGlow2Material);
-        sunGlow2.position.x = solarSystemOffsetX;
+        sunGlow2.position.set(solarSystemOffsetX, solarSystemOffsetY, 0);
         scene.add(sunGlow2);
 
         // Sun corona - outermost subtle glow
@@ -170,7 +171,7 @@ const metadata = {
           opacity: 0.1
         });
         const sunGlow3 = new THREE.Mesh(sunGlow3Geometry, sunGlow3Material);
-        sunGlow3.position.x = solarSystemOffsetX;
+        sunGlow3.position.set(solarSystemOffsetX, solarSystemOffsetY, 0);
         scene.add(sunGlow3);
 
         // Planet data with brighter colors for better visibility (scaled by solarSystemScale)
@@ -365,6 +366,7 @@ const metadata = {
             planets.forEach((planet) => {
               planet.angle += planet.speed * 0.01;
               planet.mesh.position.x = Math.cos(planet.angle) * planet.orbit + solarSystemOffsetX;
+              planet.mesh.position.y = solarSystemOffsetY;
               planet.mesh.position.z = Math.sin(planet.angle) * planet.orbit;
               planet.mesh.rotation.y += 0.015;
               
