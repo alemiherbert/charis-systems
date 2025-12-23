@@ -70,8 +70,8 @@ const metadata = {
         // The sun is at origin (0,0,0), so we need to offset the entire view to the right
         // We position camera looking from above-left, and shift lookAt to the right
         // This makes the sun appear on the right side of the viewport
-        camera.position.set(isMobile ? -30 : -55, isMobile ? 10 : 12, isMobile ? 30 : 35);
-        camera.lookAt(isMobile ? 40 : 85, isMobile ? -5 : -3, 0);
+        camera.position.set(isMobile ? -10 : -15, isMobile ? 10 : 12, isMobile ? 30 : 35);
+        camera.lookAt(isMobile ? 15 : 20, isMobile ? -5 : -3, 0);
 
         const renderer = new THREE.WebGLRenderer({ 
           antialias: true, 
@@ -380,9 +380,9 @@ const metadata = {
             // Subtle camera movement based on mouse - offset for right-side positioning
             const isMobile = window.innerWidth < 768;
             // Camera on the LEFT, looking at RIGHT to show solar system on the right side
-            const baseX = isMobile ? -35 : -60;
+            const baseX = isMobile ? -15 : -20;
             const baseY = isMobile ? 18 : 15;
-            const lookAtX = isMobile ? 35 : 80;
+            const lookAtX = isMobile ? 10 : 15;
             const lookAtY = isMobile ? 5 : 0;
             camera.position.x = baseX + mouseX * 3;
             camera.position.y = baseY + mouseY * 2;
