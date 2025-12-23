@@ -89,10 +89,10 @@ const metadata = {
         scene.add(ambientLight);
 
         // Point light from the sun - brighter for better illumination
-        // Define offset to move solar system to the right/up and scale multiplier
-        const solarSystemOffsetX = isMobile ? 35 : 55;
-        const solarSystemOffsetY = isMobile ? 5 : 8; // Move up
-        const solarSystemScale = 2.5; // 2.5x the original size
+        // Define offset to move solar system to the right/down and scale multiplier
+        const solarSystemOffsetX = isMobile ? 45 : 75;
+        const solarSystemOffsetY = isMobile ? 0 : -4; // Move down
+        const solarSystemScale = 3.2; // 3.2x the original size
         
         const sunLight = new THREE.PointLight(0xfff4e6, 3, 150);
         sunLight.position.set(solarSystemOffsetX, solarSystemOffsetY, 0);
