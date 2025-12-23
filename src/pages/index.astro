@@ -65,8 +65,7 @@ const metadata = {
         // Setup scene
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
-        // More horizontal camera angle - looking at the equator of the solar system
-        camera.position.set(0, 3, 30);
+        camera.position.set(0, 15, 25);
         camera.lookAt(0, 0, 0);
 
         const renderer = new THREE.WebGLRenderer({ 
@@ -103,23 +102,62 @@ const metadata = {
         fillLight.position.set(-10, -5, -10);
         scene.add(fillLight);
 
-        // Create realistic 3D Sun with single diffuse glowing sphere
-        const sunGeometry = new THREE.SphereGeometry(2.5, 64, 64);
-        const sunMaterial = new THREE.MeshBasicMaterial({ 
-          color: 0xffee88,
+        // Create realistic 3D Sun with layered effect
+        // Inner core - bright yellow
+        const sunCoreGeometry = new THREE.SphereGeometry(2.0, 64, 64);
+        const sunCoreMaterial = new THREE.MeshPhongMaterial({ 
+          color: 0xffffff,
+          emissive: 0xffdd00,
+          emissiveIntensity: 1.0,
+          shininess: 100,
+          specular: 0xffffaa
         });
-        const sun = new THREE.Mesh(sunGeometry, sunMaterial);
-        scene.add(sun);
+        const sunCore = new THREE.Mesh(sunCoreGeometry, sunCoreMaterial);
+        scene.add(sunCore);
 
-        // Single soft outer glow for the sun
-        const sunGlowGeometry = new THREE.SphereGeometry(3.5, 48, 48);
-        const sunGlowMaterial = new THREE.MeshBasicMaterial({ 
-          color: 0xffdd66,
+        // Sun surface layer with texture-like variation
+        const sunSurfaceGeometry = new THREE.SphereGeometry(2.5, 64, 64);
+        const sunSurfaceMaterial = new THREE.MeshPhongMaterial({ 
+          color: 0xffa500,
+          emissive: 0xff8800,
+          emissiveIntensity: 0.8,
           transparent: true,
-          opacity: 0.3
+          opacity: 0.85,
+          shininess: 50,
+          specular: 0xffcc00
+        });
+        const sunSurface = new THREE.Mesh(sunSurfaceGeometry, sunSurfaceMaterial);
+        scene.add(sunSurface);
+
+        // Sun corona - outer glow layer 1
+        const sunGlowGeometry = new THREE.SphereGeometry(3.2, 48, 48);
+        const sunGlowMaterial = new THREE.MeshBasicMaterial({ 
+          color: 0xffaa00,
+          transparent: true,
+          opacity: 0.35
         });
         const sunGlow = new THREE.Mesh(sunGlowGeometry, sunGlowMaterial);
         scene.add(sunGlow);
+
+        // Sun corona - outer glow layer 2 (larger, more transparent)
+        const sunGlow2Geometry = new THREE.SphereGeometry(4.0, 32, 32);
+        const sunGlow2Material = new THREE.MeshBasicMaterial({ 
+          color: 0xffdd66,
+          transparent: true,
+          opacity: 0.2
+        });
+        const sunGlow2 = new THREE.Mesh(sunGlow2Geometry, sunGlow2Material);
+        scene.add(sunGlow2);
+
+        // Sun corona - outermost subtle glow
+        const sunGlow3Geometry = new THREE.SphereGeometry(5.0, 24, 24);
+        const sunGlow3Material = new THREE.MeshBasicMaterial({ 
+          color: 0xffeeaa,
+          transparent: true,
+          opacity: 0.1
+        });
+        const sunGlow3 = new THREE.Mesh(sunGlow3Geometry, sunGlow3Material);
+        scene.add(sunGlow3);
 
         // Planet data with brighter colors for better visibility
         const planetData = [
@@ -283,9 +321,13 @@ const metadata = {
         // Animation loop
         function animate() {
           if (isVisible) {
-            // Rotate sun for subtle effect
-            sun.rotation.y += 0.002;
-            sunGlow.rotation.y -= 0.001;
+            // Rotate sun layers for dynamic 3D effect
+            sunCore.rotation.y += 0.008;
+            sunSurface.rotation.y -= 0.004;
+            sunSurface.rotation.x += 0.002;
+            sunGlow.rotation.y += 0.005;
+            sunGlow2.rotation.y -= 0.003;
+            sunGlow3.rotation.y += 0.002;
             
             // Raycasting for hover detection
             raycaster.setFromCamera(mouse, camera);
