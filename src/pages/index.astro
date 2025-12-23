@@ -16,38 +16,13 @@ const metadata = {
 ---
 
 <Layout metadata={metadata}>
-  <!-- Custom Hero with Amorphous Droplet Animation -->
+  <!-- Custom Hero with 3D Solar System Animation -->
   <section class="relative md:-mt-[76px] not-prose min-h-[80vh] overflow-hidden">
     <!-- Background gradient -->
     <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/20 dark:from-slate-900 dark:via-indigo-950/30 dark:to-purple-950/20"></div>
     
-    <!-- Amorphous Droplet Container - positioned to the right -->
-    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
-      <svg id="droplet-svg" class="absolute right-0 top-1/2 -translate-y-1/2 w-[50vw] h-[80vh] md:w-[45vw] md:h-[90vh]" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice">
-        <defs>
-          <linearGradient id="dropletGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.4" />
-            <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:0.3" />
-            <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.2" />
-          </linearGradient>
-          <linearGradient id="dropletGradient2" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" style="stop-color:#4f46e5;stop-opacity:0.3" />
-            <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0.15" />
-          </linearGradient>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        <!-- Main droplet shape -->
-        <path id="droplet-main" fill="url(#dropletGradient)" filter="url(#glow)" />
-        <!-- Secondary droplet for depth -->
-        <path id="droplet-secondary" fill="url(#dropletGradient2)" />
-      </svg>
-    </div>
+    <!-- Three.js Solar System Container - positioned to the right -->
+    <div id="solar-system-container" class="absolute right-0 top-0 w-[60vw] h-full pointer-events-none" aria-hidden="true"></div>
     
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6">
       <div class="pt-0 md:pt-[76px]"></div>
@@ -72,108 +47,228 @@ const metadata = {
     </div>
     
     <script>
-      function initDropletAnimation() {
-        const mainDroplet = document.getElementById('droplet-main');
-        const secondaryDroplet = document.getElementById('droplet-secondary');
-        if (!mainDroplet || !secondaryDroplet) return;
+      async function initSolarSystem() {
+        const container = document.getElementById('solar-system-container');
+        if (!container) return;
 
-        let animationId: number;
-        let time = 0;
-        let isVisible = true;
-
-        // Generate random blob path using superellipse/organic shape
-        function generateBlobPath(
-          centerX: number, 
-          centerY: number, 
-          baseRadius: number, 
-          time: number, 
-          offset: number = 0
-        ): string {
-          const points: string[] = [];
-          const numPoints = 8;
-          
-          for (let i = 0; i < numPoints; i++) {
-            const angle = (i / numPoints) * Math.PI * 2;
-            
-            // Multiple sine waves for organic movement
-            const wave1 = Math.sin(time * 0.8 + angle * 2 + offset) * 25;
-            const wave2 = Math.sin(time * 1.2 + angle * 3 + offset * 1.5) * 15;
-            const wave3 = Math.sin(time * 0.5 + angle + offset * 0.7) * 20;
-            
-            const radius = baseRadius + wave1 + wave2 + wave3;
-            
-            const x = centerX + Math.cos(angle) * radius;
-            const y = centerY + Math.sin(angle) * radius;
-            
-            if (i === 0) {
-              points.push(`M ${x} ${y}`);
-            } else {
-              // Use quadratic curves for smoother blob shape
-              const prevAngle = ((i - 1) / numPoints) * Math.PI * 2;
-              const prevWave1 = Math.sin(time * 0.8 + prevAngle * 2 + offset) * 25;
-              const prevWave2 = Math.sin(time * 1.2 + prevAngle * 3 + offset * 1.5) * 15;
-              const prevWave3 = Math.sin(time * 0.5 + prevAngle + offset * 0.7) * 20;
-              const prevRadius = baseRadius + prevWave1 + prevWave2 + prevWave3;
-              
-              const midAngle = (prevAngle + angle) / 2;
-              const midRadius = (prevRadius + radius) / 2 * 1.1;
-              const cpX = centerX + Math.cos(midAngle) * midRadius;
-              const cpY = centerY + Math.sin(midAngle) * midRadius;
-              
-              points.push(`Q ${cpX} ${cpY} ${x} ${y}`);
-            }
-          }
-          
-          // Close the path smoothly
-          const firstAngle = 0;
-          const lastAngle = ((numPoints - 1) / numPoints) * Math.PI * 2;
-          const midAngle = (lastAngle + firstAngle + Math.PI * 2) / 2;
-          
-          const firstWave = Math.sin(time * 0.8 + offset) * 25 + Math.sin(time * 1.2 + offset * 1.5) * 15 + Math.sin(time * 0.5 + offset * 0.7) * 20;
-          const lastWave = Math.sin(time * 0.8 + lastAngle * 2 + offset) * 25 + Math.sin(time * 1.2 + lastAngle * 3 + offset * 1.5) * 15 + Math.sin(time * 0.5 + lastAngle + offset * 0.7) * 20;
-          
-          const firstRadius = baseRadius + firstWave;
-          const lastRadius = baseRadius + lastWave;
-          const midRadius = (firstRadius + lastRadius) / 2 * 1.1;
-          
-          const cpX = centerX + Math.cos(midAngle) * midRadius;
-          const cpY = centerY + Math.sin(midAngle) * midRadius;
-          const endX = centerX + Math.cos(firstAngle) * firstRadius;
-          const endY = centerY + Math.sin(firstAngle) * firstRadius;
-          
-          points.push(`Q ${cpX} ${cpY} ${endX} ${endY}`);
-          points.push('Z');
-          
-          return points.join(' ');
+        // Check for WebGL support
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (!gl) {
+          console.warn('WebGL not supported, skipping solar system animation');
+          return;
         }
 
+        // Dynamically import Three.js
+        const THREE = await import('three');
+
+        // Setup scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(0, 15, 25);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ 
+          antialias: true, 
+          alpha: true,
+          powerPreference: 'high-performance'
+        });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setClearColor(0x000000, 0);
+        container.appendChild(renderer.domElement);
+
+        // Create Sun with glow effect
+        const sunGeometry = new THREE.SphereGeometry(2.5, 32, 32);
+        const sunMaterial = new THREE.MeshBasicMaterial({ 
+          color: 0xfcd34d,
+          transparent: true,
+          opacity: 0.9
+        });
+        const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+        scene.add(sun);
+
+        // Sun glow
+        const sunGlowGeometry = new THREE.SphereGeometry(3.2, 32, 32);
+        const sunGlowMaterial = new THREE.MeshBasicMaterial({ 
+          color: 0xfbbf24,
+          transparent: true,
+          opacity: 0.3
+        });
+        const sunGlow = new THREE.Mesh(sunGlowGeometry, sunGlowMaterial);
+        scene.add(sunGlow);
+
+        // Planet data: [orbitRadius, planetSize, color, orbitSpeed, initialAngle]
+        const planetData = [
+          { orbit: 5, size: 0.4, color: 0x6366f1, speed: 1.5, angle: 0 },      // Mercury - Indigo
+          { orbit: 7, size: 0.6, color: 0x8b5cf6, speed: 1.2, angle: 2.1 },    // Venus - Purple
+          { orbit: 9.5, size: 0.7, color: 0x3b82f6, speed: 1.0, angle: 4.2 },  // Earth - Blue
+          { orbit: 12, size: 0.5, color: 0xef4444, speed: 0.8, angle: 1.0 },   // Mars - Red
+          { orbit: 16, size: 1.2, color: 0xf59e0b, speed: 0.5, angle: 3.5 },   // Jupiter - Orange
+          { orbit: 20, size: 1.0, color: 0xa855f7, speed: 0.35, angle: 5.0 },  // Saturn - Violet
+        ];
+
+        interface Planet {
+          mesh: THREE.Mesh;
+          orbit: number;
+          speed: number;
+          angle: number;
+          ring?: THREE.Mesh;
+        }
+
+        const planets: Planet[] = [];
+
+        // Create planets and orbit rings
+        planetData.forEach((data) => {
+          // Orbit ring
+          const orbitGeometry = new THREE.RingGeometry(data.orbit - 0.05, data.orbit + 0.05, 64);
+          const orbitMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0x6366f1,
+            transparent: true,
+            opacity: 0.15,
+            side: THREE.DoubleSide
+          });
+          const orbitRing = new THREE.Mesh(orbitGeometry, orbitMaterial);
+          orbitRing.rotation.x = -Math.PI / 2;
+          scene.add(orbitRing);
+
+          // Planet
+          const planetGeometry = new THREE.SphereGeometry(data.size, 24, 24);
+          const planetMaterial = new THREE.MeshBasicMaterial({ 
+            color: data.color,
+            transparent: true,
+            opacity: 0.85
+          });
+          const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+          scene.add(planet);
+
+          const planetObj: Planet = {
+            mesh: planet,
+            orbit: data.orbit,
+            speed: data.speed,
+            angle: data.angle
+          };
+
+          // Add ring to Saturn (last planet)
+          if (data.orbit === 20) {
+            const ringGeometry = new THREE.RingGeometry(1.4, 2.0, 32);
+            const ringMaterial = new THREE.MeshBasicMaterial({ 
+              color: 0xc4b5fd,
+              transparent: true,
+              opacity: 0.6,
+              side: THREE.DoubleSide
+            });
+            const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+            ring.rotation.x = Math.PI / 3;
+            planetObj.ring = ring;
+            scene.add(ring);
+          }
+
+          planets.push(planetObj);
+        });
+
+        // Add some stars in the background
+        const starGeometry = new THREE.BufferGeometry();
+        const starCount = 200;
+        const starPositions = new Float32Array(starCount * 3);
+        
+        for (let i = 0; i < starCount * 3; i += 3) {
+          starPositions[i] = (Math.random() - 0.5) * 100;
+          starPositions[i + 1] = (Math.random() - 0.5) * 100;
+          starPositions[i + 2] = (Math.random() - 0.5) * 100 - 20;
+        }
+        
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        const starMaterial = new THREE.PointsMaterial({ 
+          color: 0x6366f1,
+          size: 0.15,
+          transparent: true,
+          opacity: 0.5
+        });
+        const stars = new THREE.Points(starGeometry, starMaterial);
+        scene.add(stars);
+
+        let animationId: number;
+        let isVisible = true;
+        let mouseX = 0;
+        let mouseY = 0;
+
+        // Mouse movement for subtle camera interaction
+        const handleMouseMove = (event: MouseEvent) => {
+          mouseX = (event.clientX / window.innerWidth - 0.5) * 2;
+          mouseY = (event.clientY / window.innerHeight - 0.5) * 2;
+        };
+        window.addEventListener('mousemove', handleMouseMove);
+
+        // Intersection Observer for performance
         const observer = new IntersectionObserver((entries) => {
           entries.forEach((entry) => { isVisible = entry.isIntersecting; });
         }, { threshold: 0.1 });
-        
-        const svg = document.getElementById('droplet-svg');
-        if (svg) observer.observe(svg);
+        observer.observe(container);
 
+        // Handle window resize
+        const handleResize = () => {
+          camera.aspect = container.clientWidth / container.clientHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(container.clientWidth, container.clientHeight);
+        };
+        window.addEventListener('resize', handleResize);
+
+        // Animation loop
         function animate() {
           if (isVisible) {
-            time += 0.02;
+            // Rotate sun glow
+            sunGlow.rotation.y += 0.005;
             
-            // Main droplet - larger, centered in svg
-            const mainPath = generateBlobPath(200, 200, 120, time, 0);
-            mainDroplet.setAttribute('d', mainPath);
-            
-            // Secondary droplet - slightly offset and smaller
-            const secondaryPath = generateBlobPath(200, 200, 100, time, Math.PI);
-            secondaryDroplet.setAttribute('d', secondaryPath);
+            // Animate planets
+            planets.forEach((planet) => {
+              planet.angle += planet.speed * 0.01;
+              planet.mesh.position.x = Math.cos(planet.angle) * planet.orbit;
+              planet.mesh.position.z = Math.sin(planet.angle) * planet.orbit;
+              planet.mesh.rotation.y += 0.02;
+              
+              // Update Saturn's ring position
+              if (planet.ring) {
+                planet.ring.position.copy(planet.mesh.position);
+              }
+            });
+
+            // Subtle camera movement based on mouse
+            camera.position.x = 0 + mouseX * 3;
+            camera.position.y = 15 + mouseY * 2;
+            camera.lookAt(0, 0, 0);
+
+            // Rotate stars slowly
+            stars.rotation.y += 0.0003;
+
+            renderer.render(scene, camera);
           }
           animationId = requestAnimationFrame(animate);
         }
 
         animate();
 
+        // Cleanup function
         function cleanup() {
           cancelAnimationFrame(animationId);
           observer.disconnect();
+          window.removeEventListener('resize', handleResize);
+          window.removeEventListener('mousemove', handleMouseMove);
+          
+          // Dispose Three.js resources
+          scene.traverse((object) => {
+            if (object instanceof THREE.Mesh) {
+              object.geometry.dispose();
+              if (object.material instanceof THREE.Material) {
+                object.material.dispose();
+              }
+            }
+          });
+          renderer.dispose();
+          
+          if (container.contains(renderer.domElement)) {
+            container.removeChild(renderer.domElement);
+          }
         }
 
         window.addEventListener('beforeunload', cleanup);
@@ -181,9 +276,9 @@ const metadata = {
       }
 
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initDropletAnimation);
+        document.addEventListener('DOMContentLoaded', initSolarSystem);
       } else {
-        initDropletAnimation();
+        initSolarSystem();
       }
     </script>
   </section>
