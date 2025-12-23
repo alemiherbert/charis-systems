@@ -55,7 +55,7 @@ const metadata = {
         const canvas = document.createElement('canvas');
         const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
         if (!gl) {
-          console.warn('WebGL not supported, skipping Rubik\'s Cube animation');
+          console.warn("WebGL not supported, skipping Rubik's Cube animation");
           return;
         }
 
@@ -144,7 +144,22 @@ const metadata = {
           green: 0x00ff00    // Left
         };
 
-        // Create a single cubie (small cube) with colored faces
+        /**
+         * Creates a single cubie (small cube) with colored faces for the Rubik's Cube.
+         * 
+         * @param x - Position on X-axis (-1: left, 0: middle, 1: right)
+         * @param y - Position on Y-axis (-1: bottom, 0: middle, 1: top)
+         * @param z - Position on Z-axis (-1: back, 0: middle, 1: front)
+         * 
+         * Face colors are assigned based on position:
+         * - Right face (x=1): Blue
+         * - Left face (x=-1): Green
+         * - Top face (y=1): White
+         * - Bottom face (y=-1): Yellow
+         * - Front face (z=1): Red
+         * - Back face (z=-1): Orange
+         * - Interior faces (not on outer layer): Black
+         */
         function createCubie(x: number, y: number, z: number) {
           const size = 0.95; // Slightly smaller for gaps between cubies
           const geometry = new THREE.BoxGeometry(size, size, size);
@@ -191,6 +206,10 @@ const metadata = {
           layer: number;
           direction: number;
         }
+
+        // Animation timing constants
+        const MOVE_DURATION = 200; // milliseconds between moves
+        const PAUSE_DURATION = 2000; // milliseconds to pause when solved
 
         let animationQueue: Move[] = [];
         let isAnimating = false;
@@ -253,7 +272,6 @@ const metadata = {
             // Rotate cubies
             animatingCubies.forEach(cubie => {
               const tempPos = cubie.position.clone();
-              cubie.position.sub(new THREE.Vector3(0, 0, 0));
               
               if (rotationAxis === 'x') {
                 cubie.rotateX(step);
@@ -315,7 +333,7 @@ const metadata = {
           if (animationState === 'idle' || animationState === 'paused') {
             const currentTime = Date.now();
             
-            if (animationState === 'paused' && currentTime - pauseTimer < 2000) {
+            if (animationState === 'paused' && currentTime - pauseTimer < PAUSE_DURATION) {
               return; // Still in pause
             }
             
@@ -346,7 +364,7 @@ const metadata = {
               // After solving, reset to idle to start the cycle again
               setTimeout(() => {
                 animationState = 'idle';
-              }, solveMoves.length * 200 + 2000);
+              }, solveMoves.length * MOVE_DURATION + PAUSE_DURATION);
             }
           }
         }
