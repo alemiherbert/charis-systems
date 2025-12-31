@@ -1,0 +1,84 @@
+---
+const industries = [
+    {
+        title: "Manufacturing",
+        description:
+            "Shop-floor to top-floor visibility. Real-time OEE tracking integrated with financial ledgers.",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22h20"/><path d="M12 6l-5 5H4v9h16v-9h-3l-5-5z"/><path d="M12 2v4"/><path d="M8 6h8"/></svg>`,
+    },
+    {
+        title: "Finance & Ecommerce",
+        description:
+            "Unified inventory, POS, and automated general ledger reconciliation for high-volume retail.",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="12" y1="15" x2="12" y2="15"/><line x1="16" y1="15" x2="16" y2="15"/></svg>`,
+    },
+    {
+        title: "Healthcare",
+        description:
+            "HIPAA-compliant patient data workflows integrated with billing and resource management.",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
+    },
+    {
+        title: "Education",
+        description:
+            "Campus-wide ERP for student information, finance, and facility management.",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`,
+    },
+    {
+        title: "Hospitality",
+        description:
+            "Integrated booking engines and guest experience platforms for seamless operations.",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-8a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v8"/><path d="M11 17h2"/><path d="M12 17v4"/><path d="M10 9H8"/><path d="M16 9h-2"/><path d="M3 21h18"/></svg>`,
+    },
+    {
+        title: "Transport & Logistics",
+        description:
+            "Real-time fleet telematics linked directly to sales orders and automated invoicing.",
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>`,
+    },
+];
+---
+
+<section class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+    <div class="mx-auto mb-8 max-w-2xl text-center lg:mb-14">
+        <h2
+            class="text-2xl font-bold text-neutral-800 md:text-4xl md:leading-tight dark:text-neutral-200"
+        >
+            Industries <span class="text-yellow-500 dark:text-yellow-400"
+                >We Serve</span
+            >
+        </h2>
+        <p class="mt-1 text-gray-600 dark:text-neutral-400">
+            Engineered solutions for mission-critical sectors.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {
+            industries.map((industry) => (
+                <a
+                    class="group relative flex flex-col justify-start overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 p-6 transition-all duration-300 hover:border-yellow-500 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:border-yellow-400"
+                    href="#"
+                >
+                    <div class="relative z-10">
+                        <h3 class="text-xl font-bold text-neutral-800 transition-colors group-hover:text-yellow-600 dark:text-neutral-200 dark:group-hover:text-yellow-400">
+                            {industry.title}
+                        </h3>
+                        <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+                            {industry.description}
+                        </p>
+                    </div>
+
+                    <div class="pointer-events-none absolute top-0 right-0 bottom-0 h-full w-auto translate-x-1/4 translate-y-1/4 transform text-yellow-500 opacity-20 transition-transform duration-500 group-hover:scale-110">
+                        <Fragment
+                            set:html={industry.icon.replace(
+                                'class="w-6 h-6"',
+                                'class="h-full w-auto"',
+                            )}
+                        />
+                    </div>
+                </a>
+            ))
+        }
+    </div>
+</section>

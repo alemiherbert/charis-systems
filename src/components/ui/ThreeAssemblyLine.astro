@@ -1,0 +1,1220 @@
+---
+
+---
+
+<div
+    id="canvas-container"
+    class="iso-grid relative block h-[90vh] w-full cursor-pointer bg-neutral-200 lg:block dark:bg-neutral-800"
+>
+    <style>
+        .iso-grid {
+            position: relative;
+        }
+        .iso-grid::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                repeating-linear-gradient(
+                    30deg,
+                    transparent,
+                    transparent 49px,
+                    rgba(120, 120, 120, 0.1) 49px,
+                    rgba(120, 120, 120, 0.1) 50px
+                ),
+                repeating-linear-gradient(
+                    150deg,
+                    transparent,
+                    transparent 49px,
+                    rgba(120, 120, 120, 0.1) 49px,
+                    rgba(120, 120, 120, 0.1) 50px
+                );
+            background-size: auto;
+            background-position: center;
+            mask-image: radial-gradient(
+                ellipse at 85% 50%,
+                black 20%,
+                transparent 70%
+            );
+            pointer-events: none;
+            z-index: 0;
+        }
+        /* Ensure canvas is above grid but below UI */
+        canvas {
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 768px) {
+            .iso-grid::before {
+                mask-image: radial-gradient(
+                    ellipse at 50% 50%,
+                    black 40%,
+                    transparent 80%
+                );
+            }
+        }
+    </style>
+</div>
+
+<script>
+    import * as THREE from "three";
+    import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
+    import confetti from "canvas-confetti";
+
+    // --- Configuration ---
+    const CONF = {
+        color: {
+            light: { background: 0xf9fafb },
+            dark: { background: 0x0f172a },
+        },
+        cubeSize: 3, // 3x3x3
+    };
+
+    class AssemblyLine {
+        container: HTMLElement;
+        width: number;
+        height: number;
+        scene: THREE.Scene;
+        camera!: THREE.OrthographicCamera;
+        renderer!: THREE.WebGLRenderer;
+        cubeGroup: THREE.Group;
+        isDark: boolean;
+        rotationSpeed: number = 0;
+        cubies: (THREE.Mesh | null)[][][] = [];
+        rotationQueue: Array<{ face: string; clockwise: boolean }> = [];
+        isAnimating: boolean = false;
+        moveHistory: Array<{ face: string; clockwise: boolean }> = [];
+        autoRotateTimer: number | null = null;
+        rotationCount: number = 0;
+        autoRotateState: "scrambling" | "solving" | "idle" = "scrambling";
+        isSolving: boolean = false;
+        isVisible: boolean = false;
+        isIntersecting: boolean = false;
+        solverTimer: number | null = null;
+        lastSolverScore: number = 0;
+        stagnantCount: number = 0;
+        initialScramble: Array<{ face: string; clockwise: boolean }> = [];
+        userHasInteracted: boolean = false;
+        perpetualModeStartTime: number | null = null;
+        solveStepsCount: number = 0;
+
+        // Shared Materials Cache
+        materials: { [key: string]: THREE.MeshStandardMaterial } = {};
+        boxGeo: InstanceType<typeof RoundedBoxGeometry> | null = null;
+        initialSolvedState: boolean = true;
+
+        constructor(container: HTMLElement) {
+            this.container = container;
+            this.width = container.clientWidth;
+            this.height = container.clientHeight;
+
+            this.scene = new THREE.Scene();
+            this.cubeGroup = new THREE.Group();
+            this.isDark = document.documentElement.classList.contains("dark");
+
+            this.init();
+            this.animate();
+        }
+
+        init() {
+            // Camera (Ortho)
+            const aspect = this.width / this.height;
+            const d = 20;
+
+            this.camera = new THREE.OrthographicCamera(
+                -d * aspect,
+                d * aspect,
+                d,
+                -d,
+                1,
+                2000,
+            );
+
+            // Target & Position (Universal)
+            const target = new THREE.Vector3(-44, -10.5, 0);
+            this.camera.position
+                .copy(target)
+                .add(new THREE.Vector3(200, 200, 200));
+            this.camera.lookAt(target);
+
+            // Zoom (Universal)
+            this.camera.zoom = 1;
+            this.camera.updateProjectionMatrix();
+
+            // Renderer
+            this.renderer = new THREE.WebGLRenderer({
+                alpha: true,
+                antialias: true,
+            });
+            this.renderer.setSize(this.width, this.height);
+            // Optimization: Cap pixel ratio to at most 2 to prevent excessive memory usage on high-DPI screens
+            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            this.container.appendChild(this.renderer.domElement);
+
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+            this.scene.add(ambientLight);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(10, 20, 10);
+            this.scene.add(dirLight);
+
+            // Init Resources (Materials and Geometry)
+            this.initResources();
+
+            // Build Cube
+            this.buildRubiksCube();
+
+            // Event Listeners
+            window.addEventListener("resize", () => this.onWindowResize());
+
+            // Keyboard controls for manual testing
+            window.addEventListener("keydown", (e) => {
+                const key = e.key.toLowerCase();
+                const clockwise = !e.shiftKey; // Shift key for counter-clockwise
+
+                const faceMap: { [key: string]: string } = {
+                    u: "U",
+                    d: "D",
+                    l: "L",
+                    r: "R",
+                    f: "F",
+                    b: "B",
+                };
+
+                if (faceMap[key]) {
+                    this.userHasInteracted = true; // User made a manual move
+                    this.queueRotation(faceMap[key], clockwise);
+                } else if (e.key === " ") {
+                    // Spacebar triggers scramble
+                    e.preventDefault(); // Prevent page scroll
+                    this.userHasInteracted = true; // User scrambled
+                    this.scrambleCube();
+                } else if (key === "s") {
+                    // 'S' key toggles solver
+                    if (this.solverTimer) {
+                        this.stopSolver();
+                        console.log("Solver stopped");
+                    } else {
+                        this.startSolver();
+                        console.log("Solver started");
+                    }
+                }
+            });
+
+            // Start Auto-Rotate (disabled for manual testing)
+            // this.startAutoRotate();
+
+            // Scramble cube on load
+            this.scrambleInstant();
+
+            // Start solver to continuously work toward solving the cube
+            this.startSolver();
+
+            // Intersection Observer for Visibility
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        this.isIntersecting = entry.isIntersecting;
+                        this.isVisible =
+                            this.isIntersecting && !document.hidden;
+                    });
+                },
+                { threshold: 0.2 },
+            );
+            observer.observe(this.container);
+
+            // Handle Tab Visibility
+            document.addEventListener("visibilitychange", () => {
+                this.isVisible = this.isIntersecting && !document.hidden;
+            });
+        }
+
+        initResources() {
+            // Create materials ONCE
+            const colors = {
+                right: 0x94a3b8, // Light Slate
+                left: 0xffd700, // Gold
+                top: 0xe2e8f0, // White Slate
+                bottom: 0x334155, // Mid Slate
+                front: 0x475569, // Grey Slate
+                back: 0x475569, // Grey Slate
+                inner: 0x1e293b,
+            };
+
+            this.materials = {
+                right: new THREE.MeshStandardMaterial({
+                    color: colors.right,
+                    roughness: 0.2,
+                }),
+                left: new THREE.MeshStandardMaterial({
+                    color: colors.left,
+                    roughness: 0.2,
+                }),
+                top: new THREE.MeshStandardMaterial({
+                    color: colors.top,
+                    roughness: 0.2,
+                }),
+                bottom: new THREE.MeshStandardMaterial({
+                    color: colors.bottom,
+                    roughness: 0.2,
+                }),
+                front: new THREE.MeshStandardMaterial({
+                    color: colors.front,
+                    roughness: 0.2,
+                }),
+                back: new THREE.MeshStandardMaterial({
+                    color: colors.back,
+                    roughness: 0.2,
+                }),
+                inner: new THREE.MeshStandardMaterial({
+                    color: colors.inner,
+                    roughness: 0.2,
+                }),
+            };
+
+            this.boxGeo = new RoundedBoxGeometry(0.98, 0.98, 0.98, 4, 0.1);
+        }
+
+        buildRubiksCube() {
+            // Position: Right Aligned (Universal)
+            this.cubeGroup.position.set(-16, 0, 0);
+
+            // Scale: (Universal)
+            this.cubeGroup.scale.set(3.8, 3.8, 3.8);
+
+            // Orientation: Aligned to world axes (Camera provides iso view)
+            this.cubeGroup.rotation.set(0, 0, 0);
+
+            this.scene.add(this.cubeGroup);
+
+            // Initialize 3D array
+            for (let x = 0; x < 3; x++) {
+                this.cubies[x] = [];
+                for (let y = 0; y < 3; y++) {
+                    this.cubies[x][y] = [];
+                    for (let z = 0; z < 3; z++) {
+                        this.cubies[x][y][z] = null;
+                    }
+                }
+            }
+
+            if (!this.boxGeo) return;
+
+            for (let x = 0; x < 3; x++) {
+                for (let y = 0; y < 3; y++) {
+                    for (let z = 0; z < 3; z++) {
+                        const materialsArray = [];
+
+                        // Order: Right, Left, Top, Bottom, Front, Back
+                        // 0: Right (x=2)
+                        materialsArray.push(
+                            x === 2
+                                ? this.materials.right
+                                : this.materials.inner,
+                        );
+                        // 1: Left (x=0)
+                        materialsArray.push(
+                            x === 0
+                                ? this.materials.left
+                                : this.materials.inner,
+                        );
+                        // 2: Top (y=2)
+                        materialsArray.push(
+                            y === 2 ? this.materials.top : this.materials.inner,
+                        );
+                        // 3: Bottom (y=0)
+                        materialsArray.push(
+                            y === 0
+                                ? this.materials.bottom
+                                : this.materials.inner,
+                        );
+                        // 4: Front (z=2)
+                        materialsArray.push(
+                            z === 2
+                                ? this.materials.front
+                                : this.materials.inner,
+                        );
+                        // 5: Back (z=0)
+                        materialsArray.push(
+                            z === 0
+                                ? this.materials.back
+                                : this.materials.inner,
+                        );
+
+                        const cubie = new THREE.Mesh(
+                            this.boxGeo,
+                            materialsArray,
+                        );
+                        cubie.position.set(x - 1, y - 1, z - 1);
+
+                        // Store solved position for zero-allocation reset
+                        cubie.userData = {
+                            solvedX: x,
+                            solvedY: y,
+                            solvedZ: z,
+                            // Store current logical indices to help with debugging if needed
+                            x,
+                            y,
+                            z,
+                        };
+
+                        this.cubies[x][y][z] = cubie;
+                        this.cubeGroup.add(cubie);
+                    }
+                }
+            }
+        }
+
+        queueRotation(face: string, clockwise: boolean) {
+            this.rotationQueue.push({ face, clockwise });
+            this.processQueue();
+        }
+
+        // Remaining methods...
+        // ... (scrambleCube, rotateFaceInstant, etc. kept as is, but see resetToSolved below)
+
+        scrambleCube() {
+            const faces = ["U", "D", "L", "R", "F", "B"];
+            const numMoves = 20; // Standard scramble length
+            let lastFace = "";
+
+            for (let i = 0; i < numMoves; i++) {
+                // Pick a random face different from the last one
+                let randomFace;
+                do {
+                    randomFace =
+                        faces[Math.floor(Math.random() * faces.length)];
+                } while (randomFace === lastFace);
+
+                const randomClockwise = Math.random() > 0.5;
+                this.queueRotation(randomFace, randomClockwise);
+                lastFace = randomFace;
+            }
+        }
+
+        rotateFaceInstant(face: string, clockwise: boolean) {
+            // Instant rotation without animation - for initial scramble
+            const affected: Array<{
+                cubie: THREE.Mesh;
+                x: number;
+                y: number;
+                z: number;
+            }> = [];
+
+            // Identify cubies in face
+            for (let x = 0; x < 3; x++) {
+                for (let y = 0; y < 3; y++) {
+                    for (let z = 0; z < 3; z++) {
+                        const cubie = this.cubies[x][y][z];
+                        if (!cubie) continue;
+
+                        let inFace = false;
+                        if (face === "R" && x === 2) inFace = true;
+                        if (face === "L" && x === 0) inFace = true;
+                        if (face === "U" && y === 2) inFace = true;
+                        if (face === "D" && y === 0) inFace = true;
+                        if (face === "F" && z === 2) inFace = true;
+                        if (face === "B" && z === 0) inFace = true;
+
+                        if (inFace) affected.push({ cubie, x, y, z });
+                    }
+                }
+            }
+
+            // Determine axis and direction
+            const axis =
+                face === "R" || face === "L"
+                    ? "x"
+                    : face === "U" || face === "D"
+                      ? "y"
+                      : "z";
+            const dir =
+                face === "R" || face === "U" || face === "F"
+                    ? clockwise
+                        ? -1
+                        : 1
+                    : clockwise
+                      ? 1
+                      : -1;
+
+            const newPositions: Array<{
+                cubie: THREE.Mesh;
+                x: number;
+                y: number;
+                z: number;
+            }> = [];
+
+            affected.forEach(({ cubie, x, y, z }) => {
+                // Calculate new logical position
+                let [nx, ny, nz] = [x, y, z];
+
+                const rotateIndices = (a: number, b: number, cw: boolean) => {
+                    let A = a - 1;
+                    let B = b - 1;
+                    let nA = cw ? B : -B;
+                    let nB = cw ? -A : A;
+                    return [nA + 1, nB + 1];
+                };
+
+                if (axis === "x") {
+                    const [ny2, nz2] = rotateIndices(y, z, dir < 0);
+                    ny = ny2;
+                    nz = nz2;
+                } else if (axis === "y") {
+                    const [nx2, nz2] = rotateIndices(x, z, dir > 0);
+                    nx = nx2;
+                    nz = nz2;
+                } else if (axis === "z") {
+                    const [nx2, ny2] = rotateIndices(x, y, dir < 0);
+                    nx = nx2;
+                    ny = ny2;
+                }
+
+                // Apply rotation
+                const rotationAngle = (Math.PI / 2) * dir;
+                const rotationAxis = new THREE.Vector3(
+                    axis === "x" ? 1 : 0,
+                    axis === "y" ? 1 : 0,
+                    axis === "z" ? 1 : 0,
+                );
+                const deltaQuaternion = new THREE.Quaternion();
+                deltaQuaternion.setFromAxisAngle(rotationAxis, rotationAngle);
+
+                cubie.quaternion.multiplyQuaternions(
+                    deltaQuaternion,
+                    cubie.quaternion,
+                );
+                cubie.position.set(nx - 1, ny - 1, nz - 1);
+
+                newPositions.push({ cubie, x: nx, y: ny, z: nz });
+            });
+
+            // Update array
+            affected.forEach(({ x, y, z }) => {
+                this.cubies[x][y][z] = null;
+            });
+            newPositions.forEach(({ cubie, x, y, z }) => {
+                this.cubies[x][y][z] = cubie;
+            });
+        }
+
+        scrambleInstant() {
+            // Instant scramble without animation for initial load
+            const faces = ["U", "D", "L", "R", "F", "B"];
+            const numMoves = 20;
+            let lastFace = "";
+
+            this.initialScramble = []; // Clear and store new scramble
+
+            for (let i = 0; i < numMoves; i++) {
+                let randomFace;
+                do {
+                    randomFace =
+                        faces[Math.floor(Math.random() * faces.length)];
+                } while (randomFace === lastFace);
+
+                const randomClockwise = Math.random() > 0.5;
+                this.rotateFaceInstant(randomFace, randomClockwise);
+                this.initialScramble.push({
+                    face: randomFace,
+                    clockwise: randomClockwise,
+                });
+                lastFace = randomFace;
+            }
+        }
+
+        // Cube solver using pattern-based greedy algorithm (tested in Python)
+        startSolver() {
+            if (this.solverTimer) return;
+
+            this.lastSolverScore = this.scoreCube();
+            this.stagnantCount = 0;
+
+            this.solverTimer = window.setInterval(() => {
+                if (!this.isVisible) return;
+                this.solveNextStep();
+            }, 1875);
+        }
+
+        stopSolver() {
+            if (this.solverTimer) {
+                clearInterval(this.solverTimer);
+                this.solverTimer = null;
+            }
+        }
+
+        resetToSolved() {
+            // Stop animations
+            this.rotationQueue = [];
+            this.isAnimating = false;
+
+            // Zero-allocation reset:
+            // 1. Move all cubies back to their solved positions
+            // 2. Clear array
+            // 3. Re-populate array
+
+            // Reset loop
+            this.cubeGroup.children.forEach((child: THREE.Object3D) => {
+                const cubie = child as THREE.Mesh;
+                if (
+                    !cubie.userData ||
+                    typeof cubie.userData.solvedX === "undefined"
+                )
+                    return;
+
+                const { solvedX, solvedY, solvedZ } = cubie.userData;
+
+                // Reset Pos
+                cubie.position.set(solvedX - 1, solvedY - 1, solvedZ - 1);
+
+                // Reset Rotation (Identity)
+                cubie.quaternion.set(0, 0, 0, 1);
+
+                // Update current logic indices
+                cubie.userData.x = solvedX;
+                cubie.userData.y = solvedY;
+                cubie.userData.z = solvedZ;
+            });
+
+            // Re-populate this.cubies array
+            // Clear first
+            for (let x = 0; x < 3; x++) {
+                for (let y = 0; y < 3; y++) {
+                    for (let z = 0; z < 3; z++) {
+                        this.cubies[x][y][z] = null;
+                    }
+                }
+            }
+
+            // Fill
+            this.cubeGroup.children.forEach((child: THREE.Object3D) => {
+                const cubie = child as THREE.Mesh;
+                if (
+                    !cubie.userData ||
+                    typeof cubie.userData.solvedX === "undefined"
+                )
+                    return;
+
+                const { solvedX, solvedY, solvedZ } = cubie.userData;
+                this.cubies[solvedX][solvedY][solvedZ] = cubie;
+            });
+        }
+
+        solveNextStep() {
+            // Update text every 4 steps (approx 7.5 seconds)
+            this.solveStepsCount++;
+            if (this.solveStepsCount % 4 === 0) {
+                this.rotationCount++;
+                window.dispatchEvent(
+                    new CustomEvent("cubeStateChange", {
+                        detail: {
+                            state: "cycling",
+                            rotationCount: this.rotationCount,
+                        },
+                    }),
+                );
+            }
+
+            if (this.isCubeSolved()) {
+                console.log("Cube is solved!");
+
+                // 🎉 CONFETTI!
+                if (this.isVisible) {
+                    confetti({
+                        particleCount: 150,
+                        spread: 80,
+                        origin: { y: 0.6 },
+                        colors: ["#0f172a", "#ffd700", "#ffffff", "#22c55e"],
+                    });
+                }
+
+                // If user hasn't interacted, this was the first solve
+                if (!this.userHasInteracted) {
+                    console.log(
+                        "First solve complete! Now scrambling and switching to perpetual mode...",
+                    );
+                    // Wait a moment to show solved state
+                    setTimeout(() => {
+                        this.scrambleCube(); // Animated scramble
+                        this.userHasInteracted = true; // Switch to algorithmic mode
+                        this.perpetualModeStartTime = Date.now(); // Track when perpetual mode starts
+                        console.log("Now in perpetual solving mode");
+                    }, 2000); // 2 second pause to show solved cube
+                } else {
+                    // User interacted and solver managed to solve it
+                    console.log("Algorithmic solver succeeded!");
+                    this.perpetualModeStartTime = null; // Reset timer on solve
+                }
+
+                return;
+            }
+
+            // If user hasn't interacted, just reverse the initial scramble
+            if (!this.userHasInteracted && this.initialScramble.length > 0) {
+                // Pop last move from scramble and reverse it
+                const lastMove = this.initialScramble.pop();
+                if (lastMove) {
+                    // Queue the opposite move
+                    this.queueRotation(lastMove.face, !lastMove.clockwise);
+                    console.log(
+                        `Reversing: ${lastMove.face}${lastMove.clockwise ? "" : "'"} → ${lastMove.face}${!lastMove.clockwise ? "" : "'"}`,
+                    );
+                }
+                return;
+            }
+
+            // User has interacted - use algorithmic solver
+            const currentScore = this.scoreCube();
+
+            // Failsafe: If in perpetual mode for >10 minutes, just solve it for them!
+            if (this.perpetualModeStartTime) {
+                const elapsed = Date.now() - this.perpetualModeStartTime;
+                const tenMinutes = 10 * 60 * 1000;
+
+                if (elapsed > tenMinutes) {
+                    console.log(
+                        "🎁 10 minutes reached! Solving cube for the patient watcher...",
+                    );
+                    // Reset to solved state instantly
+                    this.resetToSolved();
+                    this.perpetualModeStartTime = null;
+
+                    // Celebrate!
+                    if (this.isVisible) {
+                        confetti({
+                            particleCount: 200,
+                            spread: 100,
+                            origin: { y: 0.6 },
+                            colors: [
+                                "#0f172a",
+                                "#ffd700",
+                                "#ffffff",
+                                "#22c55e",
+                                "#f59e0b",
+                            ],
+                        });
+                    }
+                    return;
+                }
+            }
+
+            // Track stagnation
+            if (currentScore <= this.lastSolverScore) {
+                this.stagnantCount++;
+            } else {
+                this.stagnantCount = 0;
+            }
+
+            this.lastSolverScore = currentScore;
+
+            // If stuck for >3 moves, make random disruptive move to escape local maximum
+            if (this.stagnantCount > 3) {
+                const faces = ["U", "D", "L", "R", "F", "B"];
+                const randomFace =
+                    faces[Math.floor(Math.random() * faces.length)];
+                const randomDir = Math.random() > 0.5;
+                this.queueRotation(randomFace, randomDir);
+                this.stagnantCount = 0;
+                console.log(
+                    `Solver stuck, random move: ${randomFace}${randomDir ? "" : "'"}`,
+                );
+                return;
+            }
+
+            // Otherwise find best improving move via lookahead
+            const nextMove = this.findBestMove();
+            if (nextMove) {
+                this.queueRotation(nextMove.face, nextMove.clockwise);
+            }
+        }
+
+        isCubeSolved(): boolean {
+            // Check if all faces are uniform color
+            const faces = [
+                { axis: "x", val: 2 }, // Right
+                { axis: "x", val: 0 }, // Left
+                { axis: "y", val: 2 }, // Top
+                { axis: "y", val: 0 }, // Bottom
+                { axis: "z", val: 2 }, // Front
+                { axis: "z", val: 0 }, // Back
+            ];
+
+            for (const face of faces) {
+                const colors = this.getFaceColors(
+                    face.axis as "x" | "y" | "z",
+                    face.val,
+                );
+                const firstColor = colors[0];
+                if (!colors.every((c) => c === firstColor)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        getFaceColors(axis: "x" | "y" | "z", value: number): number[] {
+            const colors: number[] = [];
+
+            for (let x = 0; x < 3; x++) {
+                for (let y = 0; y < 3; y++) {
+                    for (let z = 0; z < 3; z++) {
+                        let match = false;
+                        if (axis === "x" && x === value) match = true;
+                        if (axis === "y" && y === value) match = true;
+                        if (axis === "z" && z === value) match = true;
+
+                        if (match) {
+                            const cubie = this.cubies[x][y][z];
+                            if (cubie && cubie.material) {
+                                // Get the color from the appropriate face
+                                const materials = Array.isArray(cubie.material)
+                                    ? cubie.material
+                                    : [cubie.material];
+
+                                let faceIndex = 0;
+                                if (axis === "x")
+                                    faceIndex = value === 2 ? 0 : 1;
+                                if (axis === "y")
+                                    faceIndex = value === 2 ? 2 : 3;
+                                if (axis === "z")
+                                    faceIndex = value === 2 ? 4 : 5;
+
+                                const mat = materials[
+                                    faceIndex
+                                ] as THREE.MeshStandardMaterial;
+                                colors.push(mat.color.getHex());
+                            }
+                        }
+                    }
+                }
+            }
+            return colors;
+        }
+
+        scoreCube(): number {
+            // Score: count how many stickers match their face's center color (max = 54)
+            let score = 0;
+            const faceData = [
+                { axis: "x" as const, val: 2 },
+                { axis: "x" as const, val: 0 },
+                { axis: "y" as const, val: 2 },
+                { axis: "y" as const, val: 0 },
+                { axis: "z" as const, val: 2 },
+                { axis: "z" as const, val: 0 },
+            ];
+
+            for (const data of faceData) {
+                const colors = this.getFaceColors(data.axis, data.val);
+                // Center is always at index 4 (middle of 9-element array)
+                const centerColor = colors[4];
+
+                for (const color of colors) {
+                    if (color === centerColor) {
+                        score++;
+                    }
+                }
+            }
+
+            return score;
+        }
+
+        findBestMove(): { face: string; clockwise: boolean } | null {
+            // Smart Solver: 2-step lookahead
+            const faces = ["U", "D", "L", "R", "F", "B"];
+            const currentScore = this.scoreCube();
+            let bestMove = null;
+            let bestScore = currentScore;
+
+            // 1. Try Depth-1 moves
+            for (const face of faces) {
+                for (const clockwise of [true, false]) {
+                    this.rotateFaceInstant(face, clockwise);
+                    const newScore = this.scoreCube();
+                    this.rotateFaceInstant(face, !clockwise); // Undo
+
+                    // If immediate improvement found, take it slightly preferenced
+                    if (newScore > bestScore) {
+                        bestScore = newScore;
+                        bestMove = { face, clockwise };
+                    }
+                }
+            }
+
+            // 2. If no immediate improvement (or little improvement), try Depth-2 moves
+            // Only runs if stuck or small improvement to find better paths
+            if (!bestMove || bestScore <= currentScore + 1) {
+                // If we found a +1 improvement, keep it as fallback
+                let depth2BestScore = bestScore;
+                let depth2BestMove = bestMove;
+
+                for (const f1 of faces) {
+                    for (const c1 of [true, false]) {
+                        // Move 1
+                        this.rotateFaceInstant(f1, c1);
+
+                        for (const f2 of faces) {
+                            // Avoid immediate undo: same face, opposite dir
+                            // Also avoid same face same dir (redundant with '2' moves but valid)
+                            if (f1 === f2) continue;
+
+                            for (const c2 of [true, false]) {
+                                // Move 2
+                                this.rotateFaceInstant(f2, c2);
+
+                                const score2 = this.scoreCube();
+
+                                // Undo Move 2
+                                this.rotateFaceInstant(f2, !c2);
+
+                                if (score2 > depth2BestScore) {
+                                    depth2BestScore = score2;
+                                    // We record the FIRST move of this sequence
+                                    depth2BestMove = {
+                                        face: f1,
+                                        clockwise: c1,
+                                    };
+                                }
+                            }
+                        }
+
+                        // Undo Move 1
+                        this.rotateFaceInstant(f1, !c1);
+                    }
+                }
+
+                if (depth2BestMove) {
+                    bestMove = depth2BestMove;
+                }
+            }
+
+            // 3. Fallback to random if still nothing
+            if (!bestMove) {
+                bestMove = {
+                    face: faces[Math.floor(Math.random() * faces.length)],
+                    clockwise: Math.random() > 0.5,
+                };
+            }
+
+            return bestMove;
+        }
+
+        processQueue() {
+            if (this.isAnimating || this.rotationQueue.length === 0) return;
+
+            const move = this.rotationQueue.shift();
+            if (move) {
+                this.rotateFace(move.face, move.clockwise);
+            }
+        }
+
+        rotateFace(face: string, clockwise: boolean) {
+            this.isAnimating = true;
+
+            const faceGroup = new THREE.Group();
+            const affected: Array<{
+                cubie: THREE.Mesh;
+                x: number;
+                y: number;
+                z: number;
+            }> = [];
+
+            // Identify cubies in face
+            for (let x = 0; x < 3; x++) {
+                for (let y = 0; y < 3; y++) {
+                    for (let z = 0; z < 3; z++) {
+                        const cubie = this.cubies[x][y][z];
+                        if (!cubie) continue;
+
+                        let inFace = false;
+                        if (face === "R" && x === 2) inFace = true;
+                        if (face === "L" && x === 0) inFace = true;
+                        if (face === "U" && y === 2) inFace = true;
+                        if (face === "D" && y === 0) inFace = true;
+                        if (face === "F" && z === 2) inFace = true;
+                        if (face === "B" && z === 0) inFace = true;
+
+                        if (inFace) affected.push({ cubie, x, y, z });
+                    }
+                }
+            }
+
+            // Move to temporary group
+            affected.forEach(({ cubie }) => {
+                this.cubeGroup.remove(cubie);
+                faceGroup.add(cubie);
+            });
+
+            faceGroup.position.copy(this.cubeGroup.position);
+            faceGroup.rotation.copy(this.cubeGroup.rotation);
+            faceGroup.scale.copy(this.cubeGroup.scale);
+
+            // Fix: We need to respect the parent's world transform but simplest is to attach group to scene match transform
+            // Actually simplest way in standard Three.js rubik's impl:
+            // 1. Add group to scene
+            // 2. Add cubies to group
+            // 3. Animate group rotation
+            // 4. Update cubie logic pos, reset group
+
+            this.scene.add(faceGroup);
+
+            // determine axis
+            const axis =
+                face === "R" || face === "L"
+                    ? "x"
+                    : face === "U" || face === "D"
+                      ? "y"
+                      : "z";
+            const dir =
+                face === "R" || face === "U" || face === "F"
+                    ? clockwise
+                        ? -1
+                        : 1
+                    : clockwise
+                      ? 1
+                      : -1;
+            // Note: Standard notation direction might vary, adjusting to visual preference
+            const targetAngle = (Math.PI / 2) * dir;
+
+            this.animateRotation(faceGroup, axis, targetAngle).then(() => {
+                // Update Logical Positions
+                const newPositions: Array<{
+                    cubie: THREE.Mesh;
+                    x: number;
+                    y: number;
+                    z: number;
+                }> = [];
+
+                affected.forEach(({ cubie, x, y, z }) => {
+                    // Update world matrix first to bake rotation
+                    cubie.updateMatrixWorld();
+
+                    // Detach from group, attach to cubeGroup
+                    faceGroup.remove(cubie);
+
+                    // Logic for position update (Matrix/Quaternion approach is robust but complex
+                    // ... sticking to explicit index swapping for reliability in this context)
+
+                    let [nx, ny, nz] = [x, y, z];
+
+                    // Helper for 90deg rotation of 3x3 grid indices
+                    const rotateIndices = (
+                        a: number,
+                        b: number,
+                        cw: boolean,
+                    ) => {
+                        // Centered at 1,1
+                        // Translate -1
+                        let A = a - 1;
+                        let B = b - 1;
+                        // Rotate
+                        let nA = cw ? B : -B;
+                        let nB = cw ? -A : A;
+                        // Translate +1
+                        return [nA + 1, nB + 1];
+                    };
+
+                    if (axis === "x") {
+                        const [ny2, nz2] = rotateIndices(y, z, dir < 0); // Visual check needed, assuming dir -1 is clockwise-like
+                        ny = ny2;
+                        nz = nz2;
+                    } else if (axis === "y") {
+                        const [nx2, nz2] = rotateIndices(x, z, dir > 0); // Inverted for Y-axis
+                        nx = nx2;
+                        nz = nz2;
+                    } else if (axis === "z") {
+                        const [nx2, ny2] = rotateIndices(x, y, dir < 0);
+                        nx = nx2;
+                        ny = ny2;
+                    }
+
+                    // Calculate the rotation to apply based on axis and direction
+                    const rotationAngle = (Math.PI / 2) * dir;
+                    const rotationAxis = new THREE.Vector3(
+                        axis === "x" ? 1 : 0,
+                        axis === "y" ? 1 : 0,
+                        axis === "z" ? 1 : 0,
+                    );
+                    const deltaQuaternion = new THREE.Quaternion();
+                    deltaQuaternion.setFromAxisAngle(
+                        rotationAxis,
+                        rotationAngle,
+                    );
+
+                    // Remove from faceGroup and add to cubeGroup
+                    faceGroup.remove(cubie);
+                    this.cubeGroup.add(cubie);
+
+                    // Apply the rotation by multiplying with current rotation
+                    cubie.quaternion.multiplyQuaternions(
+                        deltaQuaternion,
+                        cubie.quaternion,
+                    );
+
+                    // Snap position to grid
+                    cubie.position.set(nx - 1, ny - 1, nz - 1);
+
+                    newPositions.push({ cubie, x: nx, y: ny, z: nz });
+                });
+
+                // Update Array
+                affected.forEach(({ x, y, z }) => {
+                    this.cubies[x][y][z] = null;
+                });
+                newPositions.forEach(({ cubie, x, y, z }) => {
+                    this.cubies[x][y][z] = cubie;
+                });
+
+                this.scene.remove(faceGroup);
+                this.isAnimating = false;
+                this.processQueue();
+            });
+        }
+
+        animateRotation(
+            group: THREE.Group,
+            axis: string,
+            targetAngle: number,
+        ): Promise<void> {
+            return new Promise((resolve) => {
+                const duration = 300;
+                const start = 0;
+                const startTime = Date.now();
+
+                const tick = () => {
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    // Ease Out Quad
+                    const ease = 1 - (1 - progress) * (1 - progress);
+
+                    group.rotation[axis as "x" | "y" | "z"] =
+                        start + targetAngle * ease;
+
+                    if (progress < 1) {
+                        requestAnimationFrame(tick);
+                    } else {
+                        group.rotation[axis as "x" | "y" | "z"] =
+                            start + targetAngle;
+                        resolve();
+                    }
+                };
+                tick();
+            });
+        }
+
+        startAutoRotate() {
+            // Sequence: Scramble (8 moves) -> Solve -> Loop
+            const moves = [
+                { face: "R", clockwise: true },
+                { face: "U", clockwise: true },
+                { face: "F", clockwise: true },
+                { face: "L", clockwise: true },
+                { face: "D", clockwise: true },
+                { face: "B", clockwise: true },
+                { face: "R", clockwise: false }, // Scramble
+                { face: "U", clockwise: false },
+            ];
+
+            let moveIndex = 0;
+            let direction = 1; // 1 = scramble, -1 = solve
+
+            setInterval(() => {
+                this.rotationCount++;
+
+                // Dispatch event for Text Cycling
+                window.dispatchEvent(
+                    new CustomEvent("cubeStateChange", {
+                        detail: {
+                            state: this.isSolving ? "solving" : "cycling",
+                            rotationCount: this.rotationCount,
+                        },
+                    }),
+                );
+
+                if (this.isAnimating) return;
+
+                if (moveIndex >= moves.length) {
+                    // Switch to solve
+                    direction = -1;
+                    this.isSolving = true;
+                    moveIndex = moves.length - 1;
+
+                    // Confetti?
+                    // Only when fully solved...
+                }
+
+                if (direction === 1) {
+                    const move = moves[moveIndex];
+                    this.queueRotation(move.face, move.clockwise);
+                    moveIndex++;
+                } else {
+                    // Solving
+                    if (moveIndex < 0) {
+                        // Solved!
+                        direction = 1;
+                        this.isSolving = false;
+                        moveIndex = 0;
+                        confetti({
+                            particleCount: 100,
+                            spread: 70,
+                            origin: { y: 0.6 },
+                            colors: ["#0f172a", "#ffd700", "#ffffff"],
+                        });
+                        return;
+                    }
+                    const move = moves[moveIndex];
+                    this.queueRotation(move.face, !move.clockwise); // Reverse
+                    moveIndex--;
+                }
+            }, 2000); // 2s interval
+        }
+
+        onWindowResize() {
+            this.width = this.container.clientWidth;
+            this.height = this.container.clientHeight;
+
+            const aspect = this.width / this.height;
+            const d = 20;
+
+            this.camera.left = -d * aspect;
+            this.camera.right = d * aspect;
+            this.camera.top = d;
+            this.camera.bottom = -d;
+
+            // Universal Resize Logic (Same as Init)
+            this.camera.zoom = 1;
+            const target = new THREE.Vector3(-44, -10.5, 0);
+            this.camera.position
+                .copy(target)
+                .add(new THREE.Vector3(200, 200, 200));
+            this.camera.lookAt(target);
+
+            this.camera.updateProjectionMatrix();
+            this.renderer.setSize(this.width, this.height);
+        }
+
+        animate() {
+            // Memory safety: Stop loop if component is removed
+            if (!this.container || !document.body.contains(this.container)) {
+                return;
+            }
+
+            requestAnimationFrame(() => this.animate());
+
+            // Fixed orientation (0,0,0)
+            // The camera is already at an isometric angle (200,200,200).
+            // So the object should be un-rotated to align with the grid.
+            this.cubeGroup.rotation.x = 0;
+            this.cubeGroup.rotation.y = 0;
+            this.cubeGroup.rotation.z = 0;
+
+            this.renderer.render(this.scene, this.camera);
+        }
+    }
+
+    // Initialize
+    const container = document.getElementById("canvas-container");
+    if (container) {
+        new AssemblyLine(container);
+    }
+</script>

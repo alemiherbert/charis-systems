@@ -1,0 +1,164 @@
+---
+// Import necessary components
+import MainLayout from "@/layouts/MainLayout.astro";
+import MainSection from "@components/ui/blocks/MainSection.astro";
+import LeftSection from "@components/ui/blocks/LeftSection.astro";
+import RightSection from "@components/ui/blocks/RightSection.astro";
+import FeaturesStats from "@components/sections/features/FeaturesStats.astro";
+
+// Import necessary images
+import blueprints from "@images/blueprints-image.avif";
+import personWorking from "@images/person-working.avif";
+import beforeAfter from "@images/before-after.avif";
+import constructionWorkers from "@images/construction-workers.avif";
+import aerialView from "@images/aerial-view.avif";
+import usingTools from "@images/using-tools.avif";
+import { SITE } from "@data/constants";
+
+interface Article {
+  isRightSection: boolean;
+  title: string;
+  subTitle: string;
+  btnExists?: boolean;
+  btnTitle?: string;
+  btnURL?: string;
+  single?: boolean;
+  img?: any;
+  imgAlt?: string;
+  imgOne?: any;
+  imgOneAlt?: string;
+  imgTwo?: any;
+  imgTwoAlt?: string;
+}
+
+const articles: Article[] = [
+  {
+    isRightSection: true,
+    title: "Enterprise ERP Implementation (Frappe/ERPNext)",
+    subTitle:
+      "Stop running your multi-million dollar factory on spreadsheets. We implement robust, open-source ERP systems that handle Accounting, HR, Inventory, and Buying/Selling. We map your exact workflows to a digital twin, ensuring every shilling is accounted for in real-time.",
+    single: false,
+    imgOne: blueprints,
+    imgOneAlt: "System Architecture Blueprints",
+    imgTwo: personWorking,
+    imgTwoAlt: "Engineer configuring ERP dashboard",
+  },
+  {
+    isRightSection: false,
+    title: "SCADA & IIoT Architecture (Ignition)",
+    subTitle:
+      "Your machines are talking, but is anyone listening? We deploy Ignition SCADA to capture live data from your PLC logic. We track OEE (Overall Equipment Effectiveness), downtime reasons, and production counts instantly, feeding this data directly into your ERP for automated costing.",
+    img: beforeAfter,
+    imgAlt: "Manual logbook vs Digital Dashboard",
+    btnExists: true,
+    btnTitle: "See The Stack",
+    btnURL: "/solutions",
+  },
+  {
+    isRightSection: true,
+    title: "Custom Python & API Development",
+    subTitle:
+      "Off-the-shelf software rarely fits 100%. We bridge the gap with custom Python applications. Whether it's a specialized Vendor Portal, a Logistics Tracker, or a Mobile Money (M-Pesa/Airtel) integration, we build the muscle to connect your disparate systems.",
+    single: false,
+    imgOne: constructionWorkers,
+    imgOneAlt: "Engineers collaborating on code",
+    imgTwo: aerialView,
+    imgTwoAlt: "High level system view",
+  },
+  {
+    isRightSection: false,
+    title: "24/7 SLA Support & Maintenance",
+    subTitle:
+      "Deployment is just Day 1. We offer mission-critical support packages with guaranteed response times. If your server goes down at 2 AM on a Sunday, our engineers are alerted instantly. We keep your digital factory running so you can focus on production.",
+    img: usingTools,
+    imgAlt: "Engineer monitoring system health",
+  },
+];
+
+const pageTitle: string = `Services | ${SITE.title}`;
+const metaDescription =
+  "Charis Systems provides expert Industrial Integration: ERPNext Implementation, Ignition SCADA, and Custom Python Development.";
+const ogTitle = "Industrial Services | Charis Systems";
+---
+
+<MainLayout
+  title={pageTitle}
+  customDescription={metaDescription}
+  customOgTitle={ogTitle}
+  structuredData={{
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://charis.systems/services",
+    url: "https://charis.systems/services",
+    name: "Industrial Services | Charis Systems",
+    description: metaDescription,
+    isPartOf: {
+      "@type": "WebSite",
+      url: "https://charis.systems",
+      name: "Charis Systems",
+      description: "Charis Systems engineers unified manufacturing stacks.",
+    },
+    inLanguage: "en-US",
+  }}
+>
+  {
+    /* MainSection is the introductory section of the page, it also contains a CTA button */
+  }
+  <MainSection
+    title="Engineering Your Digital Factory"
+    subTitle="We don't just sell software; we engineer systems. From the sensor on the machine to the balance sheet in the boardroom, we build the infrastructure that powers modern manufacturing."
+    btnExists={true}
+    btnTitle="Discuss Your Architecture"
+    btnURL="/contact"
+  />
+
+  {
+    articles.map((article) => {
+      return article.isRightSection ? (
+        <RightSection
+          title={article.title}
+          subTitle={article.subTitle}
+          single={article.single}
+          imgOne={article.imgOne}
+          imgOneAlt={article.imgOneAlt}
+          imgTwo={article.imgTwo}
+          imgTwoAlt={article.imgTwoAlt}
+          btnExists={article.btnExists}
+          btnTitle={article.btnTitle}
+          btnURL={article.btnURL}
+        />
+      ) : (
+        <LeftSection
+          title={article.title}
+          subTitle={article.subTitle}
+          img={article.img}
+          imgAlt={article.imgAlt}
+          btnExists={article.btnExists}
+          btnTitle={article.btnTitle}
+          btnURL={article.btnURL}
+        />
+      );
+    })
+  }
+  {/* FeaturesStats section showcases essential stats valuable to users */}
+  <FeaturesStats
+    title="Impact By The Numbers"
+    subTitle="Our systems deliver measurable ROI within the first quarter of deployment."
+    mainStatTitle="99.9%"
+    mainStatSubTitle="System Uptime for managed clients"
+    stats={[
+      {
+        stat: "10M+",
+        description: "Data Points Processed Daily",
+      },
+      {
+        stat: "50+",
+        description: "Factories Automated",
+      },
+      {
+        stat: "30%",
+        description: "Average Cost Reduction",
+      },
+    ]}
+  />
+</MainLayout>

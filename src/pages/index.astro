@@ -1,0 +1,111 @@
+---
+// Import the necessary components
+import MainLayout from "@/layouts/MainLayout.astro";
+import HeroSection3D from "@components/sections/landing/HeroSection3D.astro";
+import WhatWeDo from "@components/sections/landing/WhatWeDo.astro";
+import ClientsSection from "@components/sections/landing/ClientsSection.astro";
+import IndustriesServed from "@components/sections/landing/IndustriesServed.astro";
+import FAQ from "@components/sections/misc/FAQ.astro";
+
+// Import assets (placeholders or real)
+---
+
+<MainLayout>
+  <!-- Hero Section -->
+  <HeroSection3D
+    title=`Transform Chaos Into Automated Systems`
+    subTitle="Stop relying on disparate spreadsheets and manual data entry. We engineer unified ERP solutions that integrate your factory floor SCADA directly with financial reporting for real-time business insight."
+    primaryBtn="Our Methodology"
+    primaryBtnURL="#methodology"
+    secondaryBtn="View Solutions"
+    secondaryBtnURL="#solutions"
+  />
+
+  <!-- What We Do -->
+  <WhatWeDo />
+
+  <!-- Industries Served -->
+  <IndustriesServed />
+
+  <ClientsSection
+    title="Trusted By <span class='text-yellow-500 dark:text-yellow-400'>Industry Leaders</span>"
+    subTitle="We deliver high-performance systems for high-performance companies."
+    partners={[
+      {
+        name: "Google",
+        icon: `<svg class="h-8 w-auto sm:h-10" viewBox="0 0 24 24" fill="currentColor" role="img" xmlns="http://www.w3.org/2000/svg"><title>Google</title><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .533 5.333.533 12S5.867 24 12.48 24c3.44 0 6.053-1.147 8.213-3.293 2.213-2.24 2.853-5.32 2.853-7.84 0-.76-.067-1.48-.173-2.147h-10.98z"/></svg>`,
+      },
+      {
+        name: "Amazon",
+        icon: `<svg class="h-8 w-auto sm:h-10" viewBox="0 0 24 24" fill="currentColor" role="img" xmlns="http://www.w3.org/2000/svg"><title>Amazon</title><path d="M13.909 15.36c1.396 0 2.503-1.107 2.503-2.434s-1.107-2.434-2.503-2.434c-1.396 0-2.503 1.107-2.503 2.434s1.107 2.434 2.503 2.434zm-8.87.525c.813 1.346 3.018 2.624 5.926 2.624 4.09 0 6.84-2.34 6.84-6.937v-4.63h-2.553v4.453c0 2.46-1.077 3.597-2.906 3.597-1.57 0-2.607-1.026-2.607-2.325v-5.725h-2.7v10.3c0 .54-.265.736-.576.736-.454 0-.78-.454-.78-1.294 0-.46.068-1.05.2-1.72l-2.062.222c-.173 1.045-.25 2.05-.25 2.94 0 1.95 1.026 3.65 2.887 3.65.613 0 1.178-.18 1.637-.506zm13.11-2.03c-.22.65-.62.83-.98.83-.53 0-.72-.45-.72-1.2 0-.27.02-.62.06-1.03l2.05-.28c.07.82.07 1.48.07 1.83 0 1.96-1.05 3.32-2.54 3.32-2.04 0-3.32-1.63-3.32-4.14 0-2.59 1.46-4.32 3.69-4.32 1.66 0 2.68 1.03 2.68 2.66 0 .53-.06 1.16-.16 1.87l-3.39.4c.03 1.12.8 1.68 1.65 1.68.74 0 1.18-.32 1.25-.85l1.64.67c-.24.77-.96 1.45-2.09 1.45-1.92 0-3.09-1.36-3.09-3.69 0-2.27 1.11-3.67 2.85-3.67 1.4 0 2.12.92 2.12 2.22 0 .56-.06 1.14-.17 1.72l-2.43-.27zm-13.68 7.3c2.5 1.78 6.43 2.16 9.77.83l.79 1.46c-3.68 1.55-8.5 1.13-11.45-1.16l.89-1.13zm12.63.8c-.89.56-1.42.06-1.08-.73l.63-1.45 2.03.62-1.58 1.56z"/></svg>`,
+      },
+      {
+        name: "Stripe",
+        icon: `<svg class="h-8 w-auto sm:h-10" viewBox="0 0 24 24" fill="currentColor" role="img" xmlns="http://www.w3.org/2000/svg"><title>Stripe</title><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.412C17.822.945 15.394.526 13.047.526c-2.786 0-4.665.645-5.918 1.681s-1.895 2.501-1.895 4.314c0 1.619.664 3.011 2.031 4.156 1.368 1.146 2.986 1.83 5.71 2.775 3.075 1.064 3.592 1.686 3.592 2.868 0 .972-.738 1.529-2.228 1.529-2.441 0-5.441-1.171-7.551-2.258l-.968 5.61c2.193.882 5.056 1.301 7.734 1.301 3.102 0 4.956-.632 6.138-1.633.916-.775 1.353-1.784 1.353-3.12 0-2.904-2.203-4.735-7.067-6.239"/></svg>`,
+      },
+      {
+        name: "Oracle",
+        icon: `<svg class="h-8 w-auto sm:h-10" viewBox="0 0 24 24" fill="currentColor" role="img" xmlns="http://www.w3.org/2000/svg"><title>Oracle</title><path d="M16.14 2.213H7.857C3.518 2.213 0 5.73 0 10.076s3.518 7.864 7.857 7.864h8.283c4.339 0 7.86-3.525 7.86-7.864 0-4.346-3.52-7.863-7.86-7.863zM7.857 15.22c-2.837 0-5.143-2.308-5.143-5.144 0-2.836 2.306-5.143 5.143-5.143h8.283c2.837 0 5.143 2.307 5.143 5.143 0 2.836-2.306 5.144-5.143 5.144H7.857zM18.81 21.787H5.203L4.19 20.776h15.62l-1 1.011zm-15.62-.253L2.18 20.523h19.64l-1.011 1.011H3.19z"/></svg>`,
+      },
+      {
+        name: "Spotify",
+        icon: `<svg class="h-8 w-auto sm:h-10" viewBox="0 0 24 24" fill="currentColor" role="img" xmlns="http://www.w3.org/2000/svg"><title>Spotify</title><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>`,
+      },
+      {
+        name: "Airbnb",
+        icon: `<svg class="h-8 w-auto sm:h-10" viewBox="0 0 24 24" fill="currentColor" role="img" xmlns="http://www.w3.org/2000/svg"><title>Airbnb</title><path d="M12.025 2.533C8.619 4.28 2.053 8.353 2.053 15.011c0 3.75 3.018 6.758 6.643 6.758 2.211 0 4.14-1.127 5.257-2.828l.044.116c.307.822 1.305 2.712 3.65 2.712 1.954 0 3.666-1.378 4.234-3.16.143-.45.022-.843-.223-1.096-.24-.249-.607-.384-1.002-.384-1.4 0-2.316 1.488-2.607 2.222-.533 1.339-1.336 1.67-1.602 1.67-.091 0-.17-.008-.225-.03-.79-.314-.72-1.636-.598-2.668.618-5.242 4.49-8.736 6.307-13.434.693-1.79.467-2.668-.313-3.66C20.378-.291 18.067-.282 12.025 2.533zm.254 11.168c-2.365 3.51-2.915 6.365-1.42 7.74.832.766 2.071.748 2.9-.036 1.487-1.408 1.007-4.24-1.48-7.704zm1.96-7.85c-1.39-2.035-3.076-2.062-4.475-.028-1.503 2.187-3.922 6.55-3.922 10.963 0 1.905 1.579 3.541 3.545 3.541 2.296 0 3.791-2.115 4.852-5.748.24-.823 1.107-5.066 0-8.728z"/></svg>`,
+      },
+      {
+        name: "Samsung",
+        icon: `<svg class="h-8 w-auto sm:h-10" viewBox="0 0 24 24" fill="currentColor" role="img" xmlns="http://www.w3.org/2000/svg"><title>Samsung</title><path d="M7.749 4.545c-2.348.65-4.204 1.944-5.292 3.82C1.516 10.024.966 12.016.966 14.12c0 1.99.27 3.585.807 4.978 1.455 3.785 5.586 5.8 9.92 4.673 2.152-.56 4.093-1.642 5.093-3.264.636-1.033 1.162-2.585 1.346-4.208.183-1.643.085-4.542-1.747-7.532-1.125-1.838-2.568-3.04-4.28-3.705-1.503-.585-3.04-.615-4.356-.516zm.134 1.777c.489 0 .979.034 1.467.228 1.478.587 2.762 1.954 3.738 3.55 1.478 2.415 1.833 4.881 1.551 6.302-.27 1.355-1.112 3.12-2.85 4.148-1.54.912-4.043 1.096-6.195.424-2.222-.693-4.044-2.735-4.48-5.188-.196-1.084-.11-2.296.269-3.411 1.038-3.049 3.931-5.707 6.04-6.023.159-.018.318-.03.46-.03z"/></svg>`,
+      },
+    ]}
+    statistics={[
+      {
+        count: "50+",
+        description: "Factories Automated",
+      },
+      {
+        count: "$100M",
+        description: "Revenue Managed",
+      },
+      {
+        count: "24/7",
+        description: "Support Coverage",
+      },
+      {
+        count: "100%",
+        description: "Project Success Rate",
+      },
+    ]}
+  />
+
+  <!-- FAQ -->
+  <FAQ
+    title="Frequently Asked Questions"
+    faqs={{
+      faqs: [
+        {
+          question: "Can you integrate with robust legacy PLCs?",
+          answer:
+            "Yes. Ignition supports almost every protocol (Modbus, OPC-UA, Siemens, Allen-Bradley). If it has wires, we can get data from it.",
+        },
+        {
+          question: "Why ERPNext over SAP or Oracle?",
+          answer:
+            "Agility and Cost. ERPNext offers 90% of the functionality at 10% of the cost, and it's open-source, meaning we can customize it endlessly to fit your exact workflow.",
+        },
+        {
+          question: "How long does a typical implementation take?",
+          answer:
+            "A baseline integration takes 4-12 weeks depending on complexity. We prefer iterative sprints so you see value immediately.",
+        },
+        {
+          question: "Do you offer post-deployment support?",
+          answer:
+            "Absolutely. We offer 24/7 SLAs to ensure your mission-critical systems never go dark.",
+        },
+      ],
+    }}
+  />
+</MainLayout>

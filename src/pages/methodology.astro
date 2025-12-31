@@ -1,0 +1,150 @@
+---
+import MainLayout from "@/layouts/MainLayout.astro";
+
+const title = "Our Methodology";
+const subTitle =
+    "We are consultants first, engineers second. We fix the process before we install the software.";
+---
+
+<MainLayout title={title}>
+    <section class="mx-auto max-w-[85rem] px-4 py-8 sm:px-6 lg:px-8">
+        <h1 class="text-3xl font-bold dark:text-white">{title}</h1>
+        <p class="mt-2 text-lg text-gray-600 dark:text-neutral-400">
+            {subTitle}
+        </p>
+    </section>
+
+    <!-- Philosophy Section -->
+    <section class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+        <div class="mx-auto mb-10 max-w-2xl text-center lg:mb-14">
+            <h2
+                class="text-2xl font-bold text-neutral-800 md:text-3xl md:leading-tight dark:text-neutral-200"
+            >
+                Our Philosophy
+            </h2>
+            <p class="mt-4 text-lg text-neutral-600 dark:text-neutral-400">
+                Most software projects fail because they try to digitize chaos.
+                We don't do that. Our goal is not just to give you new tools,
+                but to give you a new, more efficient way of operating.
+            </p>
+        </div>
+    </section>
+
+    <!-- 4-Step Process -->
+    <section class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <!-- Step 1: Audit -->
+            <div
+                class="flex flex-col rounded-xl border border-neutral-200 bg-white p-4 md:p-6 dark:border-white/10 dark:bg-neutral-900"
+            >
+                <div class="mb-4 flex items-center gap-x-4">
+                    <div
+                        class="inline-flex h-[62px] w-[62px] items-center justify-center rounded-full border-4 border-yellow-50 bg-yellow-100 dark:border-yellow-900 dark:bg-yellow-800"
+                    >
+                        <span
+                            class="text-xl font-bold text-yellow-600 dark:text-yellow-400"
+                            >1</span
+                        >
+                    </div>
+                    <div class="grow">
+                        <h3
+                            class="font-semibold text-neutral-800 dark:text-neutral-200"
+                        >
+                            Audit
+                        </h3>
+                    </div>
+                </div>
+                <p class="text-neutral-600 dark:text-neutral-400">
+                    We start by walking your floor. We sit with your
+                    accountants, store managers, and machine operators. We map
+                    your "As-Is" workflow to identify bottlenecks and paper
+                    trails.
+                </p>
+            </div>
+
+            <!-- Step 2: Design -->
+            <div
+                class="flex flex-col rounded-xl border border-neutral-200 bg-white p-4 md:p-6 dark:border-white/10 dark:bg-neutral-900"
+            >
+                <div class="mb-4 flex items-center gap-x-4">
+                    <div
+                        class="inline-flex h-[62px] w-[62px] items-center justify-center rounded-full border-4 border-yellow-50 bg-yellow-100 dark:border-yellow-900 dark:bg-yellow-800"
+                    >
+                        <span
+                            class="text-xl font-bold text-yellow-600 dark:text-yellow-400"
+                            >2</span
+                        >
+                    </div>
+                    <div class="grow">
+                        <h3
+                            class="font-semibold text-neutral-800 dark:text-neutral-200"
+                        >
+                            Design
+                        </h3>
+                    </div>
+                </div>
+                <p class="text-neutral-600 dark:text-neutral-400">
+                    We architect the "To-Be" state. This is the blueprint of
+                    your ideal automated organization. You approve the process
+                    structure before a single line of code is written.
+                </p>
+            </div>
+
+            <!-- Step 3: Develop -->
+            <div
+                class="flex flex-col rounded-xl border border-neutral-200 bg-white p-4 md:p-6 dark:border-white/10 dark:bg-neutral-900"
+            >
+                <div class="mb-4 flex items-center gap-x-4">
+                    <div
+                        class="inline-flex h-[62px] w-[62px] items-center justify-center rounded-full border-4 border-yellow-50 bg-yellow-100 dark:border-yellow-900 dark:bg-yellow-800"
+                    >
+                        <span
+                            class="text-xl font-bold text-yellow-600 dark:text-yellow-400"
+                            >3</span
+                        >
+                    </div>
+                    <div class="grow">
+                        <h3
+                            class="font-semibold text-neutral-800 dark:text-neutral-200"
+                        >
+                            Develop
+                        </h3>
+                    </div>
+                </div>
+                <p class="text-neutral-600 dark:text-neutral-400">
+                    We configure the ERPNext environment, tag the Ignition SCADA
+                    points, and write the custom Python connectors. We build the
+                    integrations ensuring a cohesive ecosystem.
+                </p>
+            </div>
+
+            <!-- Step 4: Deploy -->
+            <div
+                class="flex flex-col rounded-xl border border-neutral-200 bg-white p-4 md:p-6 dark:border-white/10 dark:bg-neutral-900"
+            >
+                <div class="mb-4 flex items-center gap-x-4">
+                    <div
+                        class="inline-flex h-[62px] w-[62px] items-center justify-center rounded-full border-4 border-yellow-50 bg-yellow-100 dark:border-yellow-900 dark:bg-yellow-800"
+                    >
+                        <span
+                            class="text-xl font-bold text-yellow-600 dark:text-yellow-400"
+                            >4</span
+                        >
+                    </div>
+                    <div class="grow">
+                        <h3
+                            class="font-semibold text-neutral-800 dark:text-neutral-200"
+                        >
+                            Deploy
+                        </h3>
+                    </div>
+                </div>
+                <p class="text-neutral-600 dark:text-neutral-400">
+                    Going live is a human challenge. We stand by your side,
+                    training your staff and hand-holding the team until the new
+                    system becomes second nature.
+                </p>
+            </div>
+        </div>
+    </section>
+</MainLayout>

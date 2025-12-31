@@ -1,0 +1,148 @@
+---
+import MainLayout from "@/layouts/MainLayout.astro";
+
+const title = "Our Solutions";
+const subTitle =
+    "From the factory floor to the finance office. We re-engineer your workflows for speed and accuracy.";
+---
+
+<MainLayout title={title}>
+    <section class="mx-auto max-w-[85rem] px-4 py-8 sm:px-6 lg:px-8">
+        <h1 class="text-3xl font-bold dark:text-white">{title}</h1>
+        <p class="mt-2 text-lg text-gray-600 dark:text-neutral-400">
+            {subTitle}
+        </p>
+    </section>
+
+    <section class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+        <!-- Section 1: Business Process Automation (The Core) -->
+        <div class="mb-10 lg:mb-14">
+            <h2
+                class="text-2xl font-bold md:text-4xl md:leading-tight dark:text-white"
+            >
+                Business Process Automation (The Core)
+            </h2>
+            <p class="mt-1 text-lg text-gray-600 dark:text-neutral-400">
+                At the heart of every efficient organization is a robust
+                mechanism for handling information.
+            </p>
+        </div>
+
+        <div class="mb-24 grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+            <div>
+                <p class="mb-6 text-lg text-neutral-800 dark:text-neutral-200">
+                    We implement <strong>Frappe/ERPNext</strong> to re-engineer how
+                    your business moves. This isn't just about installing software;
+                    it’s about architecting a better way to work.
+                </p>
+                <p class="mb-6 text-neutral-600 dark:text-neutral-400">
+                    We map your complex procurement, inventory, and financial
+                    workflows and digitize them. No more walking papers from
+                    desk to desk for signatures. We configure dynamic approval
+                    request systems where a Purchase Order generated in the
+                    warehouse is instantly visible to the CFO for approval,
+                    budget checked against real-time ledgers.
+                </p>
+                <ul
+                    class="list-inside list-disc space-y-2 text-neutral-600 dark:text-neutral-400"
+                >
+                    <li>
+                        <strong>Financial Tracking:</strong> Automated ledgers that
+                        update the moment a transaction happens.
+                    </li>
+                    <li>
+                        <strong>HR & Payroll:</strong> Seamless management of your
+                        workforce, compliant with Ugandan tax laws.
+                    </li>
+                    <li>
+                        <strong>Supply Chain:</strong> End-to-end visibility from
+                        purchase request to goods receipt.
+                    </li>
+                </ul>
+            </div>
+            <div
+                class="rounded-xl border border-yellow-100 bg-yellow-50 p-8 dark:border-white/10 dark:bg-neutral-900/50"
+            >
+                <!-- Placeholder for ERP visual or Icon -->
+                <h3
+                    class="mb-4 text-xl font-bold text-yellow-600 dark:text-yellow-400"
+                >
+                    ERPNext Implementation
+                </h3>
+                <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                    Centralized control for Finances, HR, and Operations.
+                </p>
+            </div>
+        </div>
+
+        <!-- Section 2: Industrial Integration (The Data Source) -->
+        <div class="mb-24 grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+            <div
+                class="order-2 rounded-xl border border-neutral-200 bg-neutral-50 p-8 lg:order-1 dark:border-white/10 dark:bg-neutral-900/50"
+            >
+                <h3
+                    class="mb-4 text-xl font-bold text-neutral-800 dark:text-yellow-400"
+                >
+                    Ignition SCADA
+                </h3>
+                <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                    Real-time data from PLCs and Sensors.
+                </p>
+            </div>
+            <div class="order-1 lg:order-2">
+                <h2 class="mb-4 text-2xl font-bold md:text-3xl dark:text-white">
+                    Industrial Integration (The Data Source)
+                </h2>
+                <p class="mb-6 text-lg text-neutral-800 dark:text-neutral-200">
+                    A business process is only as good as the data feeding it.
+                    In manufacturing and heavy industry, that data lives in PLCs
+                    and sensors, not on keyboards.
+                </p>
+                <p class="text-neutral-600 dark:text-neutral-400">
+                    We use <strong>Ignition SCADA</strong> to tap directly into your
+                    Operational Technology. We connect to your plant floor to monitor
+                    run-times, downtimes, and production counts automatically. This
+                    "OT to IT" bridge ensures that your ERP isn't just guessing based
+                    on end-of-day reports—it knows exactly what was produced, when,
+                    and at what cost.
+                </p>
+            </div>
+        </div>
+
+        <!-- Section 3: Custom Development & Payments (The Edge) -->
+        <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+            <div>
+                <h2 class="mb-4 text-2xl font-bold md:text-3xl dark:text-white">
+                    Custom Development & Payments (The Edge)
+                </h2>
+                <p class="mb-6 text-lg text-neutral-800 dark:text-neutral-200">
+                    Sometimes, off-the-shelf solutions leave a 10% gap that
+                    causes 90% of the friction. We write custom <strong
+                        >Python</strong
+                    > code to bridge that gap.
+                </p>
+                <p class="text-neutral-600 dark:text-neutral-400">
+                    Whether you need a specialized vendor portal, a custom
+                    logistics tracker, or a unique customer-facing app, we build
+                    it to fit your exact ecosystem. Crucially, we integrate <strong
+                        >Mobile Money (M-Pesa, Airtel)</strong
+                    > and local bank APIs directly into your system. Automate disbursements
+                    to casual workers or reconcile incoming payments instantly without
+                    manual bank statement analysis.
+                </p>
+            </div>
+            <div
+                class="rounded-xl border border-yellow-100 bg-yellow-50 p-8 dark:border-white/10 dark:bg-neutral-900/50"
+            >
+                <h3
+                    class="mb-4 text-xl font-bold text-yellow-600 dark:text-yellow-400"
+                >
+                    Python & Fintech Integrations
+                </h3>
+                <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                    Custom portals and Mobile Money bridges.
+                </p>
+            </div>
+        </div>
+    </section>
+</MainLayout>

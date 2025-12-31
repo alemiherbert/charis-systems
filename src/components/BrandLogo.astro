@@ -1,0 +1,24 @@
+---
+// Text-based logo component
+// Lexend font, weight 900, "Systems" in yellow, blinking yellow circle
+---
+
+<a
+  href="/"
+  class="font-lexend flex items-center gap-2 text-xl font-black tracking-tight"
+  data-brand-logo
+  {...Astro.props}
+>
+  <!-- Blinking yellow circle (forced circle shape, 25% larger) -->
+  <span class="relative flex" style="height: 15px; width: 15px;">
+    <span
+      class="absolute inline-flex h-full w-full animate-ping bg-yellow-400 opacity-75"
+      style="border-radius: 50% !important;"></span>
+    <span
+      class="relative inline-flex bg-yellow-500"
+      style="height: 15px; width: 15px; border-radius: 50% !important;"></span>
+  </span>
+  <!-- Logo text -->
+  <span class="text-neutral-800 dark:text-white">Charis</span>
+  <span class="text-yellow-500 dark:text-yellow-400">Systems</span>
+</a>

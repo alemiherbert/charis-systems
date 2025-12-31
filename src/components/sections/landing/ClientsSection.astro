@@ -1,0 +1,82 @@
+---
+// Define props from Astro
+import StatsGrid from "../../ui/blocks/StatsGrid.astro";
+
+const { title, subTitle, partners, statistics } = Astro.props;
+
+interface Partner {
+  icon: any;
+  name?: string;
+  href?: string;
+}
+
+interface StatProps {
+  count: string;
+  description: string;
+}
+
+// Define TypeScript interface for props
+interface Props {
+  title: string;
+  subTitle?: string;
+  partners: Partner[];
+  statistics?: StatProps[];
+}
+---
+
+<section class="mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+  <div
+    class="lg:grid lg:grid-cols-12 lg:items-center lg:justify-between lg:gap-16"
+  >
+    <div class="lg:col-span-6 lg:col-start-1">
+      <h2
+        class="mb-2 text-3xl leading-tight font-bold text-neutral-800 lg:text-4xl dark:text-neutral-200"
+      >
+        <Fragment set:html={title} />
+      </h2>
+      {
+        subTitle && (
+          <p class="mb-8 text-neutral-600 dark:text-neutral-400">{subTitle}</p>
+        )
+      }
+
+      <!-- Clients Group SVGs -->
+      <div class="grid grid-cols-2 gap-6 sm:grid-cols-4 lg:grid-cols-4">
+        {
+          partners.map((partner) => (
+            <a
+              href={partner.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center justify-center p-2"
+            >
+              <div
+                set:html={partner.icon}
+                class="h-auto w-24 text-neutral-500 transition-colors duration-300 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
+              />
+            </a>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    {
+      statistics && (
+        <div class="mt-10 lg:col-span-5 lg:col-end-13 lg:mt-0">
+          <div class="space-y-6 sm:space-y-8">
+            <ul class="grid grid-cols-2 divide-x-2 divide-y-2 divide-neutral-300 overflow-hidden dark:divide-neutral-700">
+              {statistics.map((stat, index) => (
+                <StatsGrid
+                  count={stat.count}
+                  description={stat.description}
+                  index={index}
+                />
+              ))}
+            </ul>
+          </div>
+        </div>
+      )
+    }
+  </div>
+</section>

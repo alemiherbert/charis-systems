@@ -1,0 +1,148 @@
+---
+// Import the necessary dependencies
+import PrimaryCTA from "@components/ui/buttons/PrimaryCTA.astro";
+import SecondaryCTA from "@components/ui/buttons/SecondaryCTA.astro";
+import ThreeAssemblyLine from "@components/ui/ThreeAssemblyLine.astro";
+
+// Define props from Astro
+const {
+    title,
+    subTitle,
+    primaryBtn,
+    primaryBtnURL,
+    secondaryBtn,
+    secondaryBtnURL,
+} = Astro.props;
+
+// Define TypeScript interface for props
+interface Props {
+    title: string;
+    subTitle?: string;
+    primaryBtn?: string;
+    primaryBtnURL?: string;
+    secondaryBtn?: string;
+    secondaryBtnURL?: string;
+}
+---
+
+<!-- Defining a grid container that holds all the content -->
+<section class="relative w-full overflow-hidden">
+    <!-- 3D Background (Absolute) -->
+    <div
+        class="cube-position absolute inset-0 left-[-200px] -z-10 flex h-full w-[calc(100%+400px)] items-center justify-end blur-sm md:blur-[2px] lg:blur-none"
+    >
+        <ThreeAssemblyLine />
+    </div>
+
+    <style>
+        .cube-position {
+            transform: translateX(-120px); /* Mobile: 30px - 150px */
+        }
+        @media (min-width: 768px) {
+            .cube-position {
+                transform: translateX(-20px); /* Medium: 30px - 50px */
+            }
+        }
+        @media (min-width: 1024px) {
+            .cube-position {
+                transform: translateX(30px); /* Large: Original */
+            }
+        }
+    </style>
+
+    <!-- Content Container -->
+    <div
+        class="mx-auto grid max-w-[85rem] gap-4 px-4 pt-48 pb-14 sm:px-6 md:grid-cols-1 md:items-center md:gap-8 lg:px-8"
+    >
+        <!-- Title and description -->
+        <div class="z-10 max-w-3xl" style="margin-top: -20px;">
+            <!-- Each h1 and p tag renders a portion of the title and subTitle defined above -->
+            <h1
+                id="hero-title"
+                class="block text-3xl font-bold tracking-tighter text-balance text-black sm:text-4xl lg:text-6xl lg:leading-tight dark:text-white"
+                style="font-size: 355%; font-weight: 700;"
+            >
+                <Fragment set:html={title} />
+            </h1>
+            {
+                subTitle && (
+                    <p
+                        id="hero-subtitle"
+                        class="mt-3 text-lg leading-relaxed text-pretty text-neutral-700 lg:w-4/5 dark:text-neutral-400"
+                        style="font-size: 117%;"
+                    >
+                        {subTitle}
+                    </p>
+                )
+            }
+            <!-- Action Button Section: This section includes two CTAs with their own styles and URL -->
+
+            <script>
+                const titles = [
+                    "Transform Chaos Into Automated Systems",
+                    "Seamless Factory-to-Finance Integration",
+                    "Intelligent Automation For Complex Needs",
+                    "Eliminate Manual Entry And Data Silos",
+                    "Precision Engineering For Your Software",
+                    "Real-Time Visibility Into Every KPI",
+                    "Scalable Architecture For High Growth",
+                    "The Missing Link: Operations to Finance",
+                    "Custom ERPs Built For The Modern Industry",
+                ];
+
+                const subtitles = [
+                    "Stop relying on disparate spreadsheets and manual data entry. We engineer unified ERP solutions that integrate your factory floor SCADA directly with financial reporting for real-time business insight.",
+                    "Bridge the critical gap between industrial control systems and enterprise planning. Our custom Python solutions capture production data instantly, ensuring your bottom line always reflects reality.",
+                    "Generic software fails to capture the nuance of your operations. We build bespoke automated workflows that adapt to your specific processes, eliminating bottlenecks and reducing human error.",
+                    "Disconnected systems create friction and financial blind spots. We architect robust, interconnected ecosystems where data flows automatically from procurement to production to final sale.",
+                    "We don't just implement software; we re-engineer your business logic. By applying industrial rigor to your digital infrastructure, we create systems that are scalable, resilient, and verifiable.",
+                    "Stop making decisions based on last month's reports. Our integrated dashboards provide live telemetry on production efficiency, inventory levels, and financial health, accessible from anywhere.",
+                    "Don't let your legacy systems become an anchor on your growth. We deploy modern, cloud-native architectures designed to scale effortlessly as your transaction volumes and complexity increase.",
+                    "When your shop floor doesn't talk to your ledger, you lose money. We forge the digital connections that ensure every widget produced is accounted for, costed accurately, and billed correctly.",
+                    "Off-the-shelf ERPs are bloated and rigid. We deliver lean, high-performance systems tailored exactly to your workflow, giving you competitive advantage through superior operational agility.",
+                ];
+
+                const titleEl = document.getElementById("hero-title");
+                const subtitleEl = document.getElementById("hero-subtitle");
+
+                window.addEventListener("cubeStateChange", (e: any) => {
+                    if (e.detail.state === "cycling" && titleEl && subtitleEl) {
+                        const index = e.detail.rotationCount % titles.length;
+
+                        // Fade out
+                        titleEl.style.opacity = "0";
+                        subtitleEl.style.opacity = "0";
+                        titleEl.style.transition = "opacity 0.5s ease-in-out";
+                        subtitleEl.style.transition =
+                            "opacity 0.5s ease-in-out";
+
+                        setTimeout(() => {
+                            // Update text
+                            titleEl.textContent = titles[index];
+                            subtitleEl.textContent = subtitles[index];
+
+                            // Fade in
+                            titleEl.style.opacity = "1";
+                            subtitleEl.style.opacity = "1";
+                        }, 500);
+                    }
+                });
+            </script>
+            <div class="mt-7 grid w-full gap-3 sm:inline-flex">
+                {
+                    primaryBtn && (
+                        <PrimaryCTA title={primaryBtn} url={primaryBtnURL} />
+                    )
+                }
+                {
+                    secondaryBtn && (
+                        <SecondaryCTA
+                            title={secondaryBtn}
+                            url={secondaryBtnURL}
+                        />
+                    )
+                }
+            </div>
+        </div>
+    </div>
+</section>
