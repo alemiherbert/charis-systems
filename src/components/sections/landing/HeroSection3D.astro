@@ -2,7 +2,7 @@
 // Import the necessary dependencies
 import PrimaryCTA from "@components/ui/buttons/PrimaryCTA.astro";
 import SecondaryCTA from "@components/ui/buttons/SecondaryCTA.astro";
-import ThreeAssemblyLine from "@components/ui/ThreeAssemblyLine.astro";
+import RubiksCube from "@components/ui/RubiksCube.astro";
 
 // Define props from Astro
 const {
@@ -31,7 +31,7 @@ interface Props {
     <div
         class="cube-position absolute inset-0 left-[-200px] -z-10 flex h-full w-[calc(100%+400px)] items-center justify-end blur-sm md:blur-[2px] lg:blur-none"
     >
-        <ThreeAssemblyLine />
+        <RubiksCube />
     </div>
 
     <style>

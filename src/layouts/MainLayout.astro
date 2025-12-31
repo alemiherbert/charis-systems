@@ -38,12 +38,20 @@ interface Props {
     />
     {/* Define the title of the page */}
     <title>{title}</title>
-    {/* Google Fonts - Lexend for logo */}
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {/* Local Fonts - Lexend (Preload critical weights) */}
     <link
-      href="https://fonts.googleapis.com/css2?family=Lexend:wght@700;900&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="/fonts/Lexend-Bold.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/Lexend-Regular.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
     />
     <script is:inline>
       // Script to handle dark mode. It will check if the theme is stored in localStorage or if dark theme is preferred by system settings
